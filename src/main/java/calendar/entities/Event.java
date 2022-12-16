@@ -6,7 +6,9 @@ import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "event")
@@ -46,7 +48,8 @@ public class Event implements Serializable {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Attachment> attachments;
 
-//    private Set<User> guestsAndAdmins;
+    @OneToMany (mappedBy = "event", cascade = CascadeType.ALL)
+    private Set<UserEnrolled> userEnrolled;
 
     Event () {
 

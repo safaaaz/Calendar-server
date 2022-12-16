@@ -1,11 +1,10 @@
 package calendar.entities;
 
-import calendar.Enums.TIMEZONE;
+import calendar.Enums.TimeZone;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -25,15 +24,15 @@ public class User implements Serializable {
 
     @Column(name = "time_zone", nullable = false)
     @Enumerated(EnumType.STRING)
-    private TIMEZONE timeZone;
+    private TimeZone timeZone;
 
     @JsonIgnore
     @OrderBy("dateTime asc")
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)
     private List<Event> myOwnedEvents;
 
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-//    private List<Permission> permissions;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<UserEnrolled> userEnrolled;
 
     User() {
 
@@ -61,7 +60,7 @@ public class User implements Serializable {
         return password;
     }
 
-    public TIMEZONE getTimeZone() {
+    public TimeZone getTimeZone() {
         return timeZone;
     }
 
@@ -89,7 +88,7 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public void setTimeZone(TIMEZONE timeZone) {
+    public void setTimeZone(TimeZone timeZone) {
         this.timeZone = timeZone;
     }
 
