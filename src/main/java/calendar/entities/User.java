@@ -28,7 +28,7 @@ public class User implements Serializable {
     private TIMEZONE timeZone;
 
     @JsonIgnore
-    //add @orderby
+    @OrderBy("dateTime asc")
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)
     private List<Event> myOwnedEvents;
 
