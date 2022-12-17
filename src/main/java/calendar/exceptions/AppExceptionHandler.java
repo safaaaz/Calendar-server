@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 public class AppExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UserNotFound.class)
-    public ResponseEntity<Object> handleUserNotFound(UserNotFound ex, WebRequest request) {
-        return new ResponseEntity<>(new ApiError(ex.getMessage(), HttpStatus.NOT_FOUND, LocalDateTime.now()),HttpStatus.NOT_FOUND);
+    public ResponseEntity<ApiError> handleUserNotFound(UserNotFound ex, WebRequest request) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()),HttpStatus.NOT_FOUND);
     }
 
 }

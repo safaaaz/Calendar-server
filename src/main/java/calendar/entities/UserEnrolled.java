@@ -1,7 +1,7 @@
 package calendar.entities;
 
-import calendar.Enums.UserRole;
-import calendar.Enums.UserStatus;
+import calendar.enums.UserRole;
+import calendar.enums.UserStatus;
 
 import javax.persistence.*;
 

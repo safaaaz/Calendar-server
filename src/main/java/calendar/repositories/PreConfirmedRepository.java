@@ -1,4 +1,4 @@
-package calendar.repository;
+package calendar.repositories;
 
 import calendar.entities.PreConfirmed;
 

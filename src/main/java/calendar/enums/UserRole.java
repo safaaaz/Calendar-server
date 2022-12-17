@@ -1,4 +1,4 @@
-package calendar.Enums;
+package calendar.enums;
 
 public enum UserRole {
     ORGANIZER,ADMIN,GUEST
