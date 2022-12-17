@@ -15,14 +15,14 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column(name = "name", nullable = false)
+    @Column(name = "name") //, nullable = false
     private String name;
     @Column(name = "email", nullable = false, unique = true)
     private String email;
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "time_zone", nullable = false)
+    @Column(name = "time_zone") // , nullable = false
     @Enumerated(EnumType.STRING)
     private TimeZone timeZone;
 
@@ -38,7 +38,12 @@ public class User implements Serializable {
 
     }
 
-    private User(String name, String email, String password) {
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
+    public User(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
