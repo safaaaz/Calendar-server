@@ -1,9 +1,9 @@
-package calendar.service;
+package calendar.services;
 
 import calendar.entities.PreConfirmed;
 import calendar.entities.User;
-import calendar.repository.PreConfirmedRepository;
-import calendar.repository.UserRepository;
+import calendar.repositories.PreConfirmedRepository;
+import calendar.repositories.UserRepository;
 import calendar.utils.Email;
 import calendar.utils.Token;
 import org.apache.logging.log4j.LogManager;

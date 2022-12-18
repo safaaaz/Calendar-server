@@ -1,7 +1,7 @@
-package calendar.controller;
+package calendar.controllers;
 
 import calendar.entities.User;
-import calendar.service.AuthService;
+import calendar.services.AuthService;
 import calendar.utils.Validate;
 import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;

@@ -1,6 +1,6 @@
 package calendar.entities;
 
-import calendar.Enums.TimeZone;
+import calendar.enums.TimeZone;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
