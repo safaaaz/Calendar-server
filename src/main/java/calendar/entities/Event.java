@@ -115,6 +115,10 @@ public class Event implements Serializable {
        this.userEnrolled = builder.userEnrolled;
     }
 
+    public Event createNewSimpleEvent(String title, User organizer, LocalDateTime dateTime, int duration) {
+        return new Event.Builder(title, organizer, dateTime, duration).build();
+    }
+
     public Long getId() {
         return id;
     }
