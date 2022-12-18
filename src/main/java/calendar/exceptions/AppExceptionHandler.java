@@ -21,4 +21,9 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()),HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(MissingFieldException.class)
+    public ResponseEntity<ApiError> handleMissingField(MissingFieldException ex) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()),HttpStatus.NOT_FOUND);
+    }
+
 }

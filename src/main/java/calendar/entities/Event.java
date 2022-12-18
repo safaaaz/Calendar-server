@@ -45,8 +45,8 @@ public class Event implements Serializable {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Attachment> attachments;
 
-    @OneToMany (mappedBy = "event", cascade = CascadeType.ALL)
-    private Set<UserEnrolled> userEnrolled;
+//    @OneToMany (mappedBy = "event", cascade = CascadeType.ALL)
+//    private Set<UserEnrolled> userEnrolled;
 
     Event () {
 
@@ -57,20 +57,25 @@ public class Event implements Serializable {
         private String title;
         private User organizer;
         private LocalDateTime dateTime;
-        private int duration;
+
 
         //---optional fields---
+        private int duration = 1;
         private String description = "";
         private boolean isPrivate = false;
         private String location = null;
         private List<Attachment> attachments = null;
-        private Set<UserEnrolled> userEnrolled = null;
+        //private Set<UserEnrolled> userEnrolled = null;
 
-        public Builder(String title, User organizer, LocalDateTime dateTime, int duration) {
+        public Builder(String title, User organizer, LocalDateTime dateTime) {
             this.title = title;
             this.organizer = organizer;
             this.dateTime = dateTime;
+        }
+
+        public Builder duration(int duration) {
             this.duration = duration;
+            return this;
         }
 
         public Builder description(String description) {
@@ -93,10 +98,10 @@ public class Event implements Serializable {
             return this;
         }
 
-        public Builder userEnrolled(Set<UserEnrolled> userEnrolled) {
-            this.userEnrolled = userEnrolled;
-            return this;
-        }
+//        public Builder userEnrolled(Set<UserEnrolled> userEnrolled) {
+//            this.userEnrolled = userEnrolled;
+//            return this;
+//        }
 
         public Event build() {
             return new Event(this);
@@ -112,11 +117,11 @@ public class Event implements Serializable {
        this.isPrivate = builder.isPrivate;
        this.location = builder.location;
        this.attachments = builder.attachments;
-       this.userEnrolled = builder.userEnrolled;
+       //this.userEnrolled = builder.userEnrolled;
     }
 
-    public Event createNewSimpleEvent(String title, User organizer, LocalDateTime dateTime, int duration) {
-        return new Event.Builder(title, organizer, dateTime, duration).build();
+    public Event createNewSimpleEvent(String title, User organizer, LocalDateTime dateTime) {
+        return new Event.Builder(title, organizer, dateTime).build();
     }
 
     public Long getId() {

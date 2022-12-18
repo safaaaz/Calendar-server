@@ -1,8 +1,11 @@
 package calendar.services;
 
+import calendar.DTO.CreateEventDTO;
 import calendar.entities.Event;
+import calendar.entities.User;
 import calendar.exceptions.EventNotFoundException;
 import calendar.repositories.EventRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,5 +17,26 @@ public class EventService {
 
     public Event fetchEventById(Long id) {
         return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException("event not found with id " + id));
+    }
+
+    public Event add(CreateEventDTO eventDTO, User organizer) {
+        //service validations that throw exceptions.
+        //check logical things: date in future, duration<=24 hours.
+
+        Event.Builder builder = new Event.Builder(eventDTO.title, organizer, eventDTO.dateTime);
+        if (!eventDTO.attachments.isEmpty()) {
+            builder.attachments(eventDTO.attachments);
+        }
+        if (!eventDTO.description.isEmpty()) {
+            builder.description(eventDTO.description);
+        }
+        if (!eventDTO.location.isEmpty()) {
+            builder.location(eventDTO.location);
+        }
+
+        Event event = builder.build();
+        eventRepository.save(event);
+
+        return event;
     }
 }
