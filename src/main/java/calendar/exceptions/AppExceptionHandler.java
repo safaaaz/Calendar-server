@@ -21,18 +21,18 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()),HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(MissingFieldException.class)
-    public ResponseEntity<ApiError> handleMissingField(MissingFieldException ex) {
+    @ExceptionHandler(MissingEventFieldException.class)
+    public ResponseEntity<ApiError> handleMissingField(MissingEventFieldException ex) {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()),HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(PastDateException.class)
-    public ResponseEntity<ApiError> handlePastDate(MissingFieldException ex) {
+    public ResponseEntity<ApiError> handlePastDate(MissingEventFieldException ex) {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()),HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(InvalidEventDurationException.class)
-    public ResponseEntity<ApiError> handleDuration(MissingFieldException ex) {
+    public ResponseEntity<ApiError> handleDuration(MissingEventFieldException ex) {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()),HttpStatus.NOT_FOUND);
     }
 
