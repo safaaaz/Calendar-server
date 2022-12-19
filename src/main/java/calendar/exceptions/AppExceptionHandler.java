@@ -12,18 +12,39 @@ import java.time.LocalDateTime;
 @ControllerAdvice
 public class AppExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(UserNotFound.class)
-    public ResponseEntity<ApiError> handleUserNotFound(UserNotFound ex, WebRequest request) {
-        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.NOT_FOUND);
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ApiError> handleUserNotFound(UserNotFoundException ex) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()),HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EventNotFoundException.class)
+    public ResponseEntity<ApiError> handleEventNotFound(EventNotFoundException ex) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()),HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(MissingEventFieldException.class)
+    public ResponseEntity<ApiError> handleMissingField(MissingEventFieldException ex) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()),HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(PastDateException.class)
+    public ResponseEntity<ApiError> handlePastDate(MissingEventFieldException ex) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()),HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidEventDurationException.class)
+    public ResponseEntity<ApiError> handleDuration(MissingEventFieldException ex) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()),HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UserAlreadyRegistered.class)
-    public ResponseEntity<ApiError> handleUserAlreadyRegistered(UserAlreadyRegistered ex, WebRequest request) {
+    public ResponseEntity<ApiError> handleUserAlreadyRegistered(UserAlreadyRegistered ex) {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(TokenNotFound.class)
-    public ResponseEntity<ApiError> handleTokenNotFound(TokenNotFound ex, WebRequest request) {
+    public ResponseEntity<ApiError> handleTokenNotFound(TokenNotFound ex) {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
     }
+
 }

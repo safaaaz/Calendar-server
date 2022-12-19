@@ -31,8 +31,8 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)
     private List<Event> myOwnedEvents;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<UserEnrolled> userEnrolled;
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+//    private Set<UserEnrolled> userEnrolled;
 
     User() {
 

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +17,6 @@ public class Event implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    //---required fields---
     @Column(name = "title", nullable = false)
     private String title;
 
@@ -33,13 +31,12 @@ public class Event implements Serializable {
     @Column(name = "duration")
     private int duration;
 
-    //---optional fields---
     @Lob
     @Column(name = "description")
     private String description;
 
     @Column(name = "access")
-    private boolean accessibility;
+    private boolean isPrivate;
 
     @Column(name = "location")
     private String location;
@@ -48,11 +45,83 @@ public class Event implements Serializable {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Attachment> attachments;
 
-    @OneToMany (mappedBy = "event", cascade = CascadeType.ALL)
-    private Set<UserEnrolled> userEnrolled;
+//    @OneToMany (mappedBy = "event", cascade = CascadeType.ALL)
+//    private Set<UserEnrolled> userEnrolled;
 
     Event () {
 
+    }
+
+    public static class Builder {
+        //---required fields---
+        private String title;
+        private User organizer;
+        private LocalDateTime dateTime;
+
+
+        //---optional fields---
+        private int duration = 1;
+        private String description = "";
+        private boolean isPrivate = false;
+        private String location = null;
+        private List<Attachment> attachments = null;
+        //private Set<UserEnrolled> userEnrolled = null;
+
+        public Builder(String title, User organizer, LocalDateTime dateTime) {
+            this.title = title;
+            this.organizer = organizer;
+            this.dateTime = dateTime;
+        }
+
+        public Builder duration(int duration) {
+            this.duration = duration;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder isPrivate(boolean isPrivate) {
+            this.isPrivate = isPrivate;
+            return this;
+        }
+
+        public Builder location(String location) {
+            this.location = location;
+            return this;
+        }
+
+        public Builder attachments(List<Attachment> attachments) {
+            this.attachments = attachments;
+            return this;
+        }
+
+//        public Builder userEnrolled(Set<UserEnrolled> userEnrolled) {
+//            this.userEnrolled = userEnrolled;
+//            return this;
+//        }
+
+        public Event build() {
+            return new Event(this);
+        }
+    }
+
+    private Event(Builder builder) {
+       this.title = builder.title;
+       this.organizer = builder.organizer;
+       this.dateTime = builder.dateTime;
+       this.duration = builder.duration;
+       this.description = builder.description;
+       this.isPrivate = builder.isPrivate;
+       this.location = builder.location;
+       this.attachments = builder.attachments;
+       //this.userEnrolled = builder.userEnrolled;
+    }
+
+    public Event createNewSimpleEvent(String title, User organizer, LocalDateTime dateTime) {
+        return new Event.Builder(title, organizer, dateTime).build();
     }
 
     public Long getId() {
@@ -79,10 +148,9 @@ public class Event implements Serializable {
         return description;
     }
 
-    public boolean isAccessibility() {
-        return accessibility;
+    public boolean isPrivate() {
+        return isPrivate;
     }
-
     public String getLocation() {
         return location;
     }
@@ -115,8 +183,8 @@ public class Event implements Serializable {
         this.description = description;
     }
 
-    public void setAccessibility(boolean accessibility) {
-        this.accessibility = accessibility;
+    public void setPrivate(boolean aPrivate) {
+        this.isPrivate = aPrivate;
     }
 
     public void setLocation(String location) {
