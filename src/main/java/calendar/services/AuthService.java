@@ -5,7 +5,6 @@ import calendar.entities.Response;
 import calendar.entities.User;
 import calendar.exceptions.TokenNotFound;
 import calendar.exceptions.UserAlreadyRegistered;
-import calendar.exceptions.UserNotFound;
 import calendar.repositories.PreConfirmedRepository;
 import calendar.repositories.UserRepository;
 import calendar.utils.Email;
