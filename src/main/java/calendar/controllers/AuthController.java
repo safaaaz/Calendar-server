@@ -1,5 +1,6 @@
 package calendar.controllers;
 
+import calendar.entities.Response;
 import calendar.entities.User;
 import calendar.services.AuthService;
 import calendar.utils.Validate;
@@ -29,7 +30,6 @@ public class AuthController {
     public AuthController() {
     }
 
-
     /**
      * register endpoint, which at the end sends email verification using generated unique token
      *
@@ -37,21 +37,15 @@ public class AuthController {
      * @return email verification
      */
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public ResponseEntity<String> createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@RequestBody User user) {
         logger.info("register attempt with email: " + user.getEmail() + ", and password: " + user.getPassword());
 
         // validate input before, we proceed to service
         if (Validate.email(user.getEmail()) && Validate.password(user.getPassword())) {
             User verifiedUser = authService.register(user);
-            if (verifiedUser != null) {
-                logger.info("email verification has been sent");
-                return ResponseEntity.ok().build(); // 200
-            } else {
-                logger.warn("email verification has not been sent");
-                return ResponseEntity.badRequest().build(); // 400
-            }
+            return ResponseEntity.ok(verifiedUser);
         }
-        logger.warn("email or password validation did not pass, register failed");
+        logger.warn("email or password syntax validation did not pass, register failed");
         return ResponseEntity.badRequest().build(); // 400
     }
 
@@ -62,23 +56,16 @@ public class AuthController {
      * @return response status - 200 or 404
      */
     @RequestMapping(value = "/verify/{token}")
-    public ResponseEntity<String> emailVerification(@PathVariable("token") String token) {
+    public ResponseEntity<String> tokenVerification(@PathVariable("token") String token) {
 
         token = authService.verifyToken(token);
+        logger.info(token + " is legit");
 
-        if (token != null) {
-            logger.info(token + " is legit");
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add("token", token);
 
-            HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.add("token", token);
-
-            return ResponseEntity.ok().headers(responseHeaders).body("<h1>Email verification was done successfully</h1>");  // 200
-        }
-
-        logger.warn("token is forged");
-        return ResponseEntity.notFound().build(); // 404
+        return ResponseEntity.ok().headers(responseHeaders).body("<h1>Email verification was done successfully</h1>");  // 200
     }
-
 
     /**
      * login endpoint, at the end receives unique token and stored at cache
@@ -98,13 +85,13 @@ public class AuthController {
             if (token != null) {
                 logger.info("successful login, user's token:  " + token);
 
-                Map<String, String> map = new HashMap<>();
-                map.put("token", token);
+                HttpHeaders responseHeaders = new HttpHeaders();
+                responseHeaders.add("token", token);
 
-                return ResponseEntity.ok(gson.toJson(map)); // 200
+                return ResponseEntity.ok().headers(responseHeaders).build(); // 200
             }
         }
-        logger.warn("email or password validation did not pass, login failed");
+        logger.warn("email or password syntax validation did not pass, login failed");
         return ResponseEntity.notFound().build(); // 404
     }
 }
