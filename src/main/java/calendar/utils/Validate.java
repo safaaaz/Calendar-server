@@ -3,6 +3,8 @@ package calendar.utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,5 +39,13 @@ public class Validate {
             logger.warn("password is not valid");
         }
         return status;
+    }
+
+    public static boolean isInPast(LocalDateTime dateTime) {
+       return dateTime.isBefore(LocalDateTime.now());
+    }
+
+    public static boolean isValidDuration(int duration) {
+        return 1 <= duration && duration <= 24;
     }
 }

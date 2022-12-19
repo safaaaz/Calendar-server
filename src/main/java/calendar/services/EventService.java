@@ -3,9 +3,11 @@ package calendar.services;
 import calendar.DTO.CreateEventDTO;
 import calendar.entities.Event;
 import calendar.entities.User;
+import calendar.exceptions.InvalidEventDurationException;
 import calendar.exceptions.EventNotFoundException;
+import calendar.exceptions.PastDateException;
 import calendar.repositories.EventRepository;
-import org.modelmapper.ModelMapper;
+import calendar.utils.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +22,12 @@ public class EventService {
     }
 
     public Event add(CreateEventDTO eventDTO, User organizer) {
-        //service validations that throw exceptions.
-        //check logical things: date in future, duration<=24 hours.
+        if (Validate.isInPast(eventDTO.dateTime)) {
+            throw new PastDateException(eventDTO.dateTime);
+        }
+        if (!Validate.isValidDuration(eventDTO.duration)) {
+            throw new InvalidEventDurationException(eventDTO.duration);
+        }
 
         Event.Builder builder = new Event.Builder(eventDTO.title, organizer, eventDTO.dateTime);
         if (!eventDTO.attachments.isEmpty()) {
