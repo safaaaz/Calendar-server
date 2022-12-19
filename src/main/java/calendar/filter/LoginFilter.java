@@ -1,6 +1,6 @@
 package calendar.filter;
 
-import calendar.service.AuthService;
+import calendar.services.AuthService;
 
 import javax.servlet.*;
 import javax.servlet.FilterConfig;

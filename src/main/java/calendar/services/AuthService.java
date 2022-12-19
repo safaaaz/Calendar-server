@@ -1,7 +1,11 @@
 package calendar.services;
 
 import calendar.entities.PreConfirmed;
+import calendar.entities.Response;
 import calendar.entities.User;
+import calendar.exceptions.TokenNotFound;
+import calendar.exceptions.UserAlreadyRegistered;
+import calendar.exceptions.UserNotFound;
 import calendar.repositories.PreConfirmedRepository;
 import calendar.repositories.UserRepository;
 import calendar.utils.Email;
@@ -44,13 +48,13 @@ public class AuthService {
     public User register(User user) {
 
         // email does exist
-        if (isEmailInDatabase(user.getEmail()))
-            return null;
+        if (isEmailInDatabase(user.getEmail())) {
+            logger.warn(user.getEmail() + " is already registered, registration failed");
+            throw new UserAlreadyRegistered(user.getEmail() + " is already registered, registration failed");
+        }
 
         PreConfirmed preConfirmed = new PreConfirmed(user.getEmail(), user.getPassword());
-
         sendEmail(preConfirmed);
-
         preConfirmedRepository.save(preConfirmed);
 
         return user;
@@ -72,7 +76,7 @@ public class AuthService {
         Email email = new Email.Builder().to(destination).subject(title).content(txt).build();
         mailSender.send(email.convertIntoMessage());
 
-        logger.info("mail sent successfully");
+        logger.info("email authentication has been sent");
     }
 
     /**
@@ -85,16 +89,16 @@ public class AuthService {
 
         PreConfirmed preConfirmed = preConfirmedRepository.findByToken(token);
 
-        if (preConfirmed != null) {
-
-            preConfirmedRepository.delete(preConfirmed);
-
-            User user = new User(preConfirmed.getEmail(), preConfirmed.getPassword());
-            userRepository.save(user);
-
-            return token;
+        if (preConfirmed == null) {
+            throw new TokenNotFound("the given token: " + token + " is forged, verification failed");
         }
-        return null;
+
+        preConfirmedRepository.delete(preConfirmed);
+
+        User user = new User(preConfirmed.getEmail(), preConfirmed.getPassword());
+        userRepository.save(user);
+
+        return token;
     }
 
     /**

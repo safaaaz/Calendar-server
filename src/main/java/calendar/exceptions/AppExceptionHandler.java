@@ -14,7 +14,16 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UserNotFound.class)
     public ResponseEntity<ApiError> handleUserNotFound(UserNotFound ex, WebRequest request) {
-        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()),HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(UserAlreadyRegistered.class)
+    public ResponseEntity<ApiError> handleUserAlreadyRegistered(UserAlreadyRegistered ex, WebRequest request) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(TokenNotFound.class)
+    public ResponseEntity<ApiError> handleTokenNotFound(TokenNotFound ex, WebRequest request) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
+    }
 }

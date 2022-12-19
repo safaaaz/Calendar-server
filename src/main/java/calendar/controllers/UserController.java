@@ -1,5 +1,6 @@
 package calendar.controllers;
 
+import calendar.entities.User;
 import calendar.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
