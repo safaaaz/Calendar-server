@@ -41,7 +41,6 @@ public class EventController {
             throw new MissingEventFieldException("date and time");
         }
 
-        //TODO: convert datetime from user's UTC time to default UTC with utility class
         User organizer = userService.fetchUserById(createEventDTO.organizerId);
         //List<Attachment> = readAttachments(createEventDto.attachments);
 

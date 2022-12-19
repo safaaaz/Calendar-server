@@ -11,6 +11,8 @@ import calendar.utils.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class EventService {
 
@@ -28,6 +30,10 @@ public class EventService {
         if (!Validate.isValidDuration(eventDTO.duration)) {
             throw new InvalidEventDurationException(eventDTO.duration);
         }
+
+        //TODO: convert datetime from user's UTC time to default UTC with utility class
+        //LocalDateTime defaultUtc = Converter.convertToDefaultUtc(eventDTO.dateTime);
+
 
         Event.Builder builder = new Event.Builder(eventDTO.title, organizer, eventDTO.dateTime);
         if (!eventDTO.attachments.isEmpty()) {
