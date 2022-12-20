@@ -78,7 +78,7 @@ public class AuthController {
         logger.info("login attempt with email: " + user.getEmail() + ", and password: " + user.getPassword());
 
         // validate input before, we proceed to service
-        if (Validate.email(user.getEmail()) && Validate.password(user.getPassword())) {
+        if (Validate.email(user.getEmail()) /*&& Validate.password(user.getPassword())*/) {
 
             String token = authService.login(user);
 
