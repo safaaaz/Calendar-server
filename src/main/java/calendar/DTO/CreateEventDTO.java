@@ -12,7 +12,7 @@ import java.util.Set;
 public class CreateEventDTO {
 
     public String title;
-    public Long organizerId;
+    //public Long organizerId;
     public LocalDateTime dateTime;
     public int duration;
     public String description;
