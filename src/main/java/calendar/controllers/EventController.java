@@ -66,5 +66,9 @@ public class EventController {
         user=userService.fetchUserById(user.getId());
         return ResponseEntity.ok(eventService.getEventsByMonth(user,month));
     }
-
+    @RequestMapping(value = "deleteEventById/{eventId}", method = RequestMethod.DELETE)
+    public ResponseEntity<String> getEventsByMonth(@PathVariable Long eventId){
+        logger.info("In delete events by id function");
+        return ResponseEntity.ok(eventService.deleteEventById(eventId));
+    }
 }
