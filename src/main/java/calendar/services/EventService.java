@@ -61,14 +61,11 @@ public class EventService {
         return event;
     }
     public List<Event> getEventsByMonth(User user, int month){
-        logger.info("EventService: get event by month");
-        logger.info(user.getMyOwnedEvents().get(0).getDateTime().getMonth());
+        logger.info("EventService: get event by month "+month);
         List<Event> events = user.getMyOwnedEvents()
                 .stream()
                 .filter(event->event.getDateTime().getMonth().getValue()==month)
                 .collect(Collectors.toList());
-        logger.info(events);
-        logger.info(events.isEmpty());
         return events;
     }
     public String deleteEventById(Long id){
