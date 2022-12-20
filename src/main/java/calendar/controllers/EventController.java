@@ -36,9 +36,6 @@ public class EventController {
     private AuthService authService;
     public static final Logger logger = LogManager.getLogger(EventController.class);
 
-    @Autowired
-    private AuthService authService;
-
     @RequestMapping(value = "findOne/{eventId}", method = RequestMethod.GET)
     public ResponseEntity<Event> fetchEventById(@PathVariable Long eventId) {
         return ResponseEntity.ok(eventService.fetchEventById(eventId));
