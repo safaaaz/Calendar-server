@@ -1,6 +1,7 @@
 package calendar.services;
 
 import calendar.DTO.CreateEventDTO;
+import calendar.controllers.EventController;
 import calendar.entities.Event;
 import calendar.entities.User;
 import calendar.exceptions.InvalidEventDurationException;
@@ -8,16 +9,24 @@ import calendar.exceptions.EventNotFoundException;
 import calendar.exceptions.PastDateException;
 import calendar.repositories.EventRepository;
 import calendar.utils.Validate;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class EventService {
 
     @Autowired
     private EventRepository eventRepository;
+    public static final Logger logger = LogManager.getLogger(EventService.class);
 
     public Event fetchEventById(Long id) {
         return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException("event not found with id " + id));
@@ -50,5 +59,20 @@ public class EventService {
         eventRepository.save(event);
 
         return event;
+    }
+    public List<Event> getEventsByMonth(User user, int month){
+        logger.info("EventService: get event by month");
+        logger.info(user.getMyOwnedEvents().get(0).getDateTime().getMonth());
+        List<Event> events = user.getMyOwnedEvents()
+                .stream()
+                .filter(event->event.getDateTime().getMonth().getValue()==month)
+                .collect(Collectors.toList());
+        logger.info(events);
+        logger.info(events.isEmpty());
+        return events;
+    }
+    public String deleteEventById(Long id){
+        eventRepository.deleteById(id);
+        return "Event has been deleted";
     }
 }

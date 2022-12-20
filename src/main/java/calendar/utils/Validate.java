@@ -32,12 +32,12 @@ public class Validate {
     public static boolean password(String password) {
         logger.info("password validation has begun: ");
         boolean status = VALID_PASSWORD_REGEX.matcher(password).find();
-
+/*
         if (status) {
             logger.info("password is valid");
         } else {
             logger.warn("password is not valid");
-        }
+        }*/
         return status;
     }
 
