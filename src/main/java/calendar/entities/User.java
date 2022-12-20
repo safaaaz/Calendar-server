@@ -31,14 +31,13 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)
     private List<Event> myOwnedEvents;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Notification notifications;
 
 //    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 //    private Set<UserEnrolled> userEnrolled;
 
     User() {
-
     }
 
     public User(String email, String password) {
@@ -80,6 +79,10 @@ public class User implements Serializable {
 //        return permissions;
 //    }
 
+    public Notification getNotifications() {
+        return notifications;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -104,7 +107,11 @@ public class User implements Serializable {
         this.myOwnedEvents = myOwnedEvents;
     }
 
-//    public void setPermissions(List<Permission> permissions) {
+    public void setNotifications(Notification notifications) {
+        this.notifications = notifications;
+    }
+
+    //    public void setPermissions(List<Permission> permissions) {
 //        this.permissions = permissions;
 //    }
 }
