@@ -15,7 +15,7 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column(name = "name") //, nullable = false
+    @Column(name = "name")
     private String name;
     @Column(name = "email", nullable = false, unique = true)
     private String email;
@@ -33,9 +33,6 @@ public class User implements Serializable {
 
     @OneToOne(mappedBy = "user")
     private Notification notifications;
-
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-//    private Set<UserEnrolled> userEnrolled;
 
     User() {
 

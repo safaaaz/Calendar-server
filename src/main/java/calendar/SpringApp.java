@@ -9,10 +9,6 @@ import org.springframework.context.event.EventListener;
 @SpringBootApplication
 public class SpringApp {
 
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
-    }
     public static void main(String[] args) {
         SpringApplication.run(SpringApp.class, args);
     }

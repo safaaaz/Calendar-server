@@ -19,4 +19,8 @@ public class UserService {
     public User fetchUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("user not found with id " + id));
     }
+
+    public User fetchUserByEmail(String email) {
+       return userRepository.findByEmail(email);
+    }
 }

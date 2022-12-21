@@ -1,5 +1,6 @@
 package calendar.entities;
 
+import calendar.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
@@ -45,11 +46,18 @@ public class Event implements Serializable {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Attachment> attachments;
 
-//    @OneToMany (mappedBy = "event", cascade = CascadeType.ALL)
-//    private Set<UserEnrolled> userEnrolled;
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<UserRolePair> userRoles;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<UserStatusPair> userStatuses;
 
     Event () {
 
+    }
+
+    public void addGuest(User user) {
+        this.userRoles.add(UserRolePair.newGuest(user));
     }
 
     public static class Builder {
@@ -65,7 +73,6 @@ public class Event implements Serializable {
         private boolean isPrivate = false;
         private String location = null;
         private List<Attachment> attachments = null;
-        //private Set<UserEnrolled> userEnrolled = null;
 
         public Builder(String title, User organizer, LocalDateTime dateTime) {
             this.title = title;
@@ -98,11 +105,6 @@ public class Event implements Serializable {
             return this;
         }
 
-//        public Builder userEnrolled(Set<UserEnrolled> userEnrolled) {
-//            this.userEnrolled = userEnrolled;
-//            return this;
-//        }
-
         public Event build() {
             return new Event(this);
         }
@@ -117,7 +119,6 @@ public class Event implements Serializable {
        this.isPrivate = builder.isPrivate;
        this.location = builder.location;
        this.attachments = builder.attachments;
-       //this.userEnrolled = builder.userEnrolled;
     }
 
     public Event createNewSimpleEvent(String title, User organizer, LocalDateTime dateTime) {
@@ -193,5 +194,21 @@ public class Event implements Serializable {
 
     public void setAttachments(List<Attachment> attachments) {
         this.attachments = attachments;
+    }
+
+    public Set<UserRolePair> getUserRoles() {
+        return userRoles;
+    }
+
+    public Set<UserStatusPair> getUserStatuses() {
+        return userStatuses;
+    }
+
+    public void setUserRoles(Set<UserRolePair> userRoles) {
+        this.userRoles = userRoles;
+    }
+
+    public void setUserStatuses(Set<UserStatusPair> userStatuses) {
+        this.userStatuses = userStatuses;
     }
 }
