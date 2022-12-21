@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -31,14 +30,13 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)
     private List<Event> myOwnedEvents;
 
-    @OneToOne(mappedBy = "user")
-    private Notification notifications;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private NotificationSettings notificationSettings;
 
 //    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 //    private Set<UserEnrolled> userEnrolled;
 
     User() {
-
     }
 
     public User(String email, String password) {
@@ -80,6 +78,10 @@ public class User implements Serializable {
 //        return permissions;
 //    }
 
+    public NotificationSettings getNotificationSettings() {
+        return notificationSettings;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -104,7 +106,11 @@ public class User implements Serializable {
         this.myOwnedEvents = myOwnedEvents;
     }
 
-//    public void setPermissions(List<Permission> permissions) {
+    public void setNotificationSettings(NotificationSettings notificationSettings) {
+        this.notificationSettings = notificationSettings;
+    }
+
+    //    public void setPermissions(List<Permission> permissions) {
 //        this.permissions = permissions;
 //    }
 }
