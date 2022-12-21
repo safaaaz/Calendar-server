@@ -1,5 +1,6 @@
 package calendar.services;
 
+import calendar.entities.NotificationSettings;
 import calendar.entities.PreConfirmed;
 import calendar.entities.Response;
 import calendar.entities.User;
@@ -95,6 +96,8 @@ public class AuthService {
         preConfirmedRepository.delete(preConfirmed);
 
         User user = new User(preConfirmed.getEmail(), preConfirmed.getPassword());
+        NotificationSettings notificationSettings = new NotificationSettings(user, true, true, true, true, true, true, true, true, true);
+        user.setNotificationSettings(notificationSettings);
         userRepository.save(user);
 
         return token;

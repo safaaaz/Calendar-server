@@ -1,7 +1,6 @@
 package calendar.controllers;
 
-import calendar.entities.Event;
-import calendar.entities.Notification;
+import calendar.entities.NotificationSettings;
 import calendar.entities.User;
 import calendar.services.AuthService;
 import calendar.services.NotificationService;
@@ -14,17 +13,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/settings")
 public class SettingsController {
 
-    @Autowired
-    NotificationService notificationService;
-
-    @Autowired
-    AuthService authService;
-
-    @RequestMapping(value = "/notification/update", method = RequestMethod.POST)
-    public ResponseEntity<Notification> updateNotification(@RequestHeader("token") String token, @RequestBody Notification notification) {
-
-        User user = authService.getCachedUser(token);
-        notification.setUser(user);
-        return ResponseEntity.ok(notificationService.updateNotification(notification));
-    }
+//    @Autowired
+//    NotificationService notificationService;
+//
+//    @Autowired
+//    AuthService authService;
+//
+//    @RequestMapping(value = "/notification/update", method = RequestMethod.POST)
+//    public ResponseEntity<NotificationSettings> updateNotification(@RequestHeader("token") String token, @RequestBody NotificationSettings notification) {
+//
+//        User user = authService.getCachedUser(token);
+//        notification.setUser(user);
+//        return ResponseEntity.ok(notificationService.updateNotification(notification));
+//    }
 }

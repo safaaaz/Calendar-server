@@ -1,17 +1,20 @@
 package calendar.entities;
 
+import org.hibernate.annotations.DynamicInsert;
+
 import javax.persistence.*;
 
 @Entity
-@Table(name = "notifications")
-public class Notification {
+@Table(name = "notifications_settings")
+@DynamicInsert
+public class NotificationSettings {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
     @Column
@@ -41,14 +44,14 @@ public class Notification {
     @Column
     private boolean remind10MinBefore;
 
-    public Notification() {
+    public NotificationSettings() {
     }
 
-    public Notification(User user, boolean byEmail, boolean byPopUp,
-                        boolean userStatusChanged, boolean eventDataChanged,
-                        boolean eventCanceled, boolean userWasUninvited,
-                        boolean remind1MinBefore, boolean remind5MinBefore,
-                        boolean remind10MinBefore) {
+    public NotificationSettings(User user, boolean byEmail, boolean byPopUp,
+                                boolean userStatusChanged, boolean eventDataChanged,
+                                boolean eventCanceled, boolean userWasUninvited,
+                                boolean remind1MinBefore, boolean remind5MinBefore,
+                                boolean remind10MinBefore) {
         this.user = user;
         this.byEmail = byEmail;
         this.byPopUp = byPopUp;
@@ -139,6 +142,18 @@ public class Notification {
 
     public void setRemind10MinBefore(boolean remind10MinBefore) {
         this.remind10MinBefore = remind10MinBefore;
+    }
+
+    public void updateNotificationSettings(NotificationSettings notificationSettings){
+        byEmail = notificationSettings.getByEmail();
+        byPopUp = notificationSettings.getByPopUp();
+        userStatusChanged = notificationSettings.getUserStatusChanged();
+        eventDataChanged = notificationSettings.getEventDataChanged();
+        eventCanceled = notificationSettings.getEventCanceled();
+        userWasUninvited = notificationSettings.getUserWasUninvited();
+        remind1MinBefore = notificationSettings.getRemind1MinBefore();
+        remind5MinBefore = notificationSettings.getRemind5MinBefore();
+        remind10MinBefore = notificationSettings.getRemind10MinBefore();
     }
 
     @Override
