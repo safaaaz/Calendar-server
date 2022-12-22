@@ -1,13 +1,14 @@
 package calendar.entities;
 
+import calendar.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -18,7 +19,6 @@ public class Event implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    //---required fields---
     @Column(name = "title", nullable = false)
     private String title;
 
@@ -33,26 +33,108 @@ public class Event implements Serializable {
     @Column(name = "duration")
     private int duration;
 
-    //---optional fields---
     @Lob
     @Column(name = "description")
     private String description;
 
     @Column(name = "access")
-    private boolean accessibility;
+    private boolean isPrivate;
 
     @Column(name = "location")
     private String location;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    //@JsonIgnore
+    @OneToMany
     private List<Attachment> attachments;
 
-    @OneToMany (mappedBy = "event", cascade = CascadeType.ALL)
-    private Set<UserEnrolled> userEnrolled;
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<UserRolePair> userRoles;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<UserStatusPair> userStatuses;
 
     Event () {
 
+    }
+
+    public UserRolePair addGuest(User user) {
+        UserRolePair pair = UserRolePair.newGuest(user);
+        if (!userRoles.contains(pair)) {
+            this.userRoles.add(pair);
+            return pair;
+        }
+
+        return null;
+    }
+
+    public UserRolePair addAdmin() {
+        //Update guest to admin
+        return null;
+    }
+
+    public static class Builder {
+        //---required fields---
+        private String title;
+        private User organizer;
+        private LocalDateTime dateTime;
+
+
+        //---optional fields---
+        private int duration = 1;
+        private String description = "";
+        private boolean isPrivate = false;
+        private String location = null;
+        private List<Attachment> attachments = null;
+
+        public Builder(String title, User organizer, LocalDateTime dateTime) {
+            this.title = title;
+            this.organizer = organizer;
+            this.dateTime = dateTime;
+        }
+
+        public Builder duration(int duration) {
+            this.duration = duration;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder isPrivate(boolean isPrivate) {
+            this.isPrivate = isPrivate;
+            return this;
+        }
+
+        public Builder location(String location) {
+            this.location = location;
+            return this;
+        }
+
+        public Builder attachments(List<Attachment> attachments) {
+            this.attachments = attachments;
+            return this;
+        }
+
+        public Event build() {
+            return new Event(this);
+        }
+    }
+
+    private Event(Builder builder) {
+       this.title = builder.title;
+       this.organizer = builder.organizer;
+       this.dateTime = builder.dateTime;
+       this.duration = builder.duration;
+       this.description = builder.description;
+       this.isPrivate = builder.isPrivate;
+       this.location = builder.location;
+       this.attachments = builder.attachments;
+    }
+
+    public Event createNewSimpleEvent(String title, User organizer, LocalDateTime dateTime) {
+        return new Event.Builder(title, organizer, dateTime).build();
     }
 
     public Long getId() {
@@ -79,10 +161,9 @@ public class Event implements Serializable {
         return description;
     }
 
-    public boolean isAccessibility() {
-        return accessibility;
+    public boolean isPrivate() {
+        return isPrivate;
     }
-
     public String getLocation() {
         return location;
     }
@@ -115,8 +196,8 @@ public class Event implements Serializable {
         this.description = description;
     }
 
-    public void setAccessibility(boolean accessibility) {
-        this.accessibility = accessibility;
+    public void setPrivate(boolean aPrivate) {
+        this.isPrivate = aPrivate;
     }
 
     public void setLocation(String location) {
@@ -125,5 +206,57 @@ public class Event implements Serializable {
 
     public void setAttachments(List<Attachment> attachments) {
         this.attachments = attachments;
+    }
+
+    public Set<UserRolePair> getUserRoles() {
+        return userRoles;
+    }
+
+    public Set<UserStatusPair> getUserStatuses() {
+        return userStatuses;
+    }
+
+    public void setUserRoles(Set<UserRolePair> userRoles) {
+        this.userRoles = userRoles;
+    }
+
+    public void setUserStatuses(Set<UserStatusPair> userStatuses) {
+        this.userStatuses = userStatuses;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Event)) return false;
+
+        Event event = (Event) o;
+
+        if (duration != event.duration) return false;
+        if (isPrivate != event.isPrivate) return false;
+        if (!Objects.equals(id, event.id)) return false;
+        if (!Objects.equals(title, event.title)) return false;
+        if (!Objects.equals(organizer, event.organizer)) return false;
+        if (!Objects.equals(dateTime, event.dateTime)) return false;
+        if (!Objects.equals(description, event.description)) return false;
+        if (!Objects.equals(location, event.location)) return false;
+        if (!Objects.equals(attachments, event.attachments)) return false;
+        if (!Objects.equals(userRoles, event.userRoles)) return false;
+        return Objects.equals(userStatuses, event.userStatuses);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (organizer != null ? organizer.hashCode() : 0);
+        result = 31 * result + (dateTime != null ? dateTime.hashCode() : 0);
+        result = 31 * result + duration;
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (isPrivate ? 1 : 0);
+        result = 31 * result + (location != null ? location.hashCode() : 0);
+        result = 31 * result + (attachments != null ? attachments.hashCode() : 0);
+        result = 31 * result + (userRoles != null ? userRoles.hashCode() : 0);
+        result = 31 * result + (userStatuses != null ? userStatuses.hashCode() : 0);
+        return result;
     }
 }
