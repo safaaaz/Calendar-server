@@ -5,9 +5,7 @@ import calendar.controllers.EventController;
 import calendar.entities.Event;
 import calendar.entities.User;
 import calendar.enums.UserRole;
-import calendar.exceptions.InvalidEventDurationException;
-import calendar.exceptions.EventNotFoundException;
-import calendar.exceptions.PastDateException;
+import calendar.exceptions.*;
 import calendar.repositories.EventRepository;
 import calendar.utils.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -78,22 +76,12 @@ public class EventService {
 
     public Event addGuest(Event event, User user) {
 
-        event.addGuest(user);
-        eventRepository.save(event);
+        if (event.addGuest(user) != null) {
+            eventRepository.save(event);
+        } else {
+            throw new UserAlreadyHaveRoleException(UserRole.GUEST);
+        }
 
         return event;
     }
-
-//    public Event addRole(Event event, User user, UserRole role) {
-//        switch (role) {
-//            case GUEST:
-//                event.addGuest(event, user);
-//                break;
-//            case ADMIN:
-//                break;
-//            default:
-//        }
-//
-//        return event;
-//    }
 }
