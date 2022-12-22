@@ -25,6 +25,10 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("user not found with id " + id));
     }
 
+    public User fetchUserByEmail(String email) {
+       return userRepository.findByEmail(email);
+    }
+
     public NotificationSettings updateNotificationSettings(User user, NotificationSettings tempNotificationSettings){
 
         //NotificationSettings currentSettings = notificationSettingsRepository.findByUserId(user.getId()).orElseThrow(() -> {throw new UserNotFoundException("user was not found, notifications settings update failed");});

@@ -24,6 +24,11 @@ public class UserController {
         return ResponseEntity.ok(userService.fetchUserById(userId));
     }
 
+    @RequestMapping(value = "findOne/{email}", method = RequestMethod.GET)
+    public ResponseEntity<User> fetchUserByEmail(@PathVariable String email) {
+        return ResponseEntity.ok(userService.fetchUserByEmail(email));
+    }
+
     @RequestMapping(value = "/settings/notification/update", method = RequestMethod.POST)
     public ResponseEntity<NotificationSettings> updateNotificationSettings(@RequestHeader("token") String token, @RequestBody NotificationSettings notification) {
 

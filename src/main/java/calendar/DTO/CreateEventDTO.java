@@ -1,13 +1,10 @@
 package calendar.DTO;
 
 import calendar.entities.Attachment;
-import calendar.entities.User;
-import calendar.entities.UserEnrolled;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class CreateEventDTO {
 

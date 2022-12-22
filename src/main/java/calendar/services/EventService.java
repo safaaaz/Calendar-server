@@ -4,6 +4,7 @@ import calendar.DTO.CreateEventDTO;
 import calendar.controllers.EventController;
 import calendar.entities.Event;
 import calendar.entities.User;
+import calendar.enums.UserRole;
 import calendar.exceptions.InvalidEventDurationException;
 import calendar.exceptions.EventNotFoundException;
 import calendar.exceptions.PastDateException;
@@ -60,16 +61,39 @@ public class EventService {
 
         return event;
     }
-    public List<Event> getEventsByMonth(User user, int month){
-        logger.info("EventService: get event by month "+month);
+
+    public List<Event> getEventsByMonth(User user, int month) {
+        logger.info("EventService: get event by month " + month);
         List<Event> events = user.getMyOwnedEvents()
                 .stream()
-                .filter(event->event.getDateTime().getMonth().getValue()==month)
+                .filter(event -> event.getDateTime().getMonth().getValue() == month)
                 .collect(Collectors.toList());
         return events;
     }
-    public String deleteEventById(Long id){
+
+    public String deleteEventById(Long id) {
         eventRepository.deleteById(id);
         return "Event has been deleted";
     }
+
+    public Event addGuest(Event event, User user) {
+
+        event.addGuest(user);
+        eventRepository.save(event);
+
+        return event;
+    }
+
+//    public Event addRole(Event event, User user, UserRole role) {
+//        switch (role) {
+//            case GUEST:
+//                event.addGuest(event, user);
+//                break;
+//            case ADMIN:
+//                break;
+//            default:
+//        }
+//
+//        return event;
+//    }
 }

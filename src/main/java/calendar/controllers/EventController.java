@@ -1,10 +1,11 @@
 package calendar.controllers;
 
 import calendar.DTO.CreateEventDTO;
+import calendar.DTO.UserDTO;
 import calendar.entities.Event;
 import calendar.entities.User;
+import calendar.enums.UserRole;
 import calendar.exceptions.MissingEventFieldException;
-import calendar.filter.TokenFilter;
 
 import calendar.services.AuthService;
 import calendar.services.EventService;
@@ -13,12 +14,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static java.util.Objects.isNull;
 import static org.hibernate.internal.util.StringHelper.isBlank;
@@ -34,6 +32,7 @@ public class EventController {
     private UserService userService;
     @Autowired
     private AuthService authService;
+
     public static final Logger logger = LogManager.getLogger(EventController.class);
 
     @RequestMapping(value = "findOne/{eventId}", method = RequestMethod.GET)
@@ -69,5 +68,17 @@ public class EventController {
     public ResponseEntity<String> getEventsByMonth(@PathVariable Long eventId){
         logger.info("In delete events by id function");
         return ResponseEntity.ok(eventService.deleteEventById(eventId));
+    }
+
+    @RequestMapping(value = "addGuest/{eventId}", method = RequestMethod.POST)
+    public ResponseEntity<Event> addGuest(@PathVariable Long eventId, @RequestBody UserDTO userDTO) {
+        if (isBlank(userDTO.email)) {
+            throw new MissingEventFieldException("email");
+        }
+
+        Event event = eventService.fetchEventById(eventId);
+        User guest = userService.fetchUserByEmail(userDTO.email);
+
+        return ResponseEntity.ok(eventService.addGuest(event, guest));
     }
 }
