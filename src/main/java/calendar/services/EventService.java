@@ -77,6 +77,7 @@ public class EventService {
     }
 
     public Event addGuest(Event event, User user) {
+
         event.addGuest(user);
         eventRepository.save(event);
 

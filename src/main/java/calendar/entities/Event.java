@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -42,8 +43,8 @@ public class Event implements Serializable {
     @Column(name = "location")
     private String location;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    //@JsonIgnore
+    @OneToMany
     private List<Attachment> attachments;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -56,8 +57,19 @@ public class Event implements Serializable {
 
     }
 
-    public void addGuest(User user) {
-        this.userRoles.add(UserRolePair.newGuest(user));
+    public UserRolePair addGuest(User user) {
+        UserRolePair pair = UserRolePair.newGuest(user);
+        if (!userRoles.contains(pair)) {
+            this.userRoles.add(pair);
+            return pair;
+        }
+
+        return null;
+    }
+
+    public UserRolePair addAdmin() {
+        //Update guest to admin
+        return null;
     }
 
     public static class Builder {
@@ -210,5 +222,41 @@ public class Event implements Serializable {
 
     public void setUserStatuses(Set<UserStatusPair> userStatuses) {
         this.userStatuses = userStatuses;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Event)) return false;
+
+        Event event = (Event) o;
+
+        if (duration != event.duration) return false;
+        if (isPrivate != event.isPrivate) return false;
+        if (!Objects.equals(id, event.id)) return false;
+        if (!Objects.equals(title, event.title)) return false;
+        if (!Objects.equals(organizer, event.organizer)) return false;
+        if (!Objects.equals(dateTime, event.dateTime)) return false;
+        if (!Objects.equals(description, event.description)) return false;
+        if (!Objects.equals(location, event.location)) return false;
+        if (!Objects.equals(attachments, event.attachments)) return false;
+        if (!Objects.equals(userRoles, event.userRoles)) return false;
+        return Objects.equals(userStatuses, event.userStatuses);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (organizer != null ? organizer.hashCode() : 0);
+        result = 31 * result + (dateTime != null ? dateTime.hashCode() : 0);
+        result = 31 * result + duration;
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (isPrivate ? 1 : 0);
+        result = 31 * result + (location != null ? location.hashCode() : 0);
+        result = 31 * result + (attachments != null ? attachments.hashCode() : 0);
+        result = 31 * result + (userRoles != null ? userRoles.hashCode() : 0);
+        result = 31 * result + (userStatuses != null ? userStatuses.hashCode() : 0);
+        return result;
     }
 }
