@@ -70,7 +70,7 @@ public class EventController {
     }
 
     @RequestMapping(value = "inviteGuest/{eventId}", method = RequestMethod.POST)
-    public ResponseEntity<Event> addGuest(@PathVariable Long eventId, @RequestBody UserDTO userDTO) {
+    public ResponseEntity<Event> inviteGuest(@PathVariable Long eventId, @RequestBody UserDTO userDTO) {
         if (isBlank(userDTO.email)) {
             throw new MissingEventFieldException("email");
         }
@@ -79,5 +79,16 @@ public class EventController {
         User guest = userService.fetchUserByEmail(userDTO.email);
 
         return ResponseEntity.ok(eventService.inviteGuest(event, guest));
+    }
+    @RequestMapping(value = "removeGuest/{eventId}", method = RequestMethod.POST)
+    public ResponseEntity<User> removeGuest(@PathVariable Long eventId, @RequestBody UserDTO userDTO) {
+        if (isBlank(userDTO.email)) {
+            throw new MissingEventFieldException("email");
+        }
+
+        Event event = eventService.fetchEventById(eventId);
+        User guest = userService.fetchUserByEmail(userDTO.email);
+
+        return ResponseEntity.ok(eventService.removeGuest(event, guest));
     }
 }

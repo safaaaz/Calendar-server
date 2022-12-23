@@ -70,7 +70,6 @@ public class EventService {
     }
 
     public Event inviteGuest(Event event, User user) {
-
         if (event.getOrganizer() == user) {
             throw new InvalidOperationException("organizer can't be a guest at his own event");
         }
@@ -82,5 +81,14 @@ public class EventService {
         }
 
         return event;
+    }
+
+    public User removeGuest(Event event, User user) {
+        if (event.removeGuest(user) != null) {
+            eventRepository.save(event);
+            return user;
+        } else {
+            throw new InvalidOperationException("user is not a guest in this event");
+        }
     }
 }
