@@ -1,7 +1,6 @@
 package calendar.services;
 
 import calendar.DTO.CreateEventDTO;
-import calendar.controllers.EventController;
 import calendar.entities.Event;
 import calendar.entities.User;
 import calendar.enums.UserRole;
@@ -13,12 +12,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class EventService {
@@ -74,9 +69,13 @@ public class EventService {
         return "Event has been deleted";
     }
 
-    public Event addGuest(Event event, User user) {
+    public Event inviteGuest(Event event, User user) {
 
-        if (event.addGuest(user) != null) {
+        if (event.getOrganizer() == user) {
+            throw new InvalidOperationException("organizer can't be a guest at his own event");
+        }
+
+        if (event.inviteGuest(user) != null) {
             eventRepository.save(event);
         } else {
             throw new UserAlreadyHaveRoleException(UserRole.GUEST);

@@ -4,7 +4,6 @@ import calendar.DTO.CreateEventDTO;
 import calendar.DTO.UserDTO;
 import calendar.entities.Event;
 import calendar.entities.User;
-import calendar.enums.UserRole;
 import calendar.exceptions.MissingEventFieldException;
 
 import calendar.services.AuthService;
@@ -70,7 +69,7 @@ public class EventController {
         return ResponseEntity.ok(eventService.deleteEventById(eventId));
     }
 
-    @RequestMapping(value = "addGuest/{eventId}", method = RequestMethod.POST)
+    @RequestMapping(value = "inviteGuest/{eventId}", method = RequestMethod.POST)
     public ResponseEntity<Event> addGuest(@PathVariable Long eventId, @RequestBody UserDTO userDTO) {
         if (isBlank(userDTO.email)) {
             throw new MissingEventFieldException("email");
@@ -79,6 +78,6 @@ public class EventController {
         Event event = eventService.fetchEventById(eventId);
         User guest = userService.fetchUserByEmail(userDTO.email);
 
-        return ResponseEntity.ok(eventService.addGuest(event, guest));
+        return ResponseEntity.ok(eventService.inviteGuest(event, guest));
     }
 }

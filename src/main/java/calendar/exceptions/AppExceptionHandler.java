@@ -49,5 +49,8 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UserAlreadyHaveRoleException.class)
     public ResponseEntity<ApiError> handleUserAlreadyHaveRole(UserAlreadyHaveRoleException ex) {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
+    }    @ExceptionHandler(InvalidOperationException.class)
+    public ResponseEntity<ApiError> handleInvalidOperation(InvalidOperationException ex) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
     }
 }

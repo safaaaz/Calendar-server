@@ -1,7 +1,5 @@
 package calendar.entities;
 
-import calendar.enums.UserRole;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import javax.persistence.*;
@@ -57,18 +55,21 @@ public class Event implements Serializable {
 
     }
 
-    public UserRolePair addGuest(User user) {
-        UserRolePair pair = UserRolePair.newGuest(user);
-        if (!userRoles.contains(pair)) {
-            this.userRoles.add(pair);
-            return pair;
+    public UserRolePair inviteGuest(User user) {
+        UserRolePair guestUser = UserRolePair.newGuest(user);
+        UserStatusPair pendingUser = UserStatusPair.newPending(user);
+        if (!userRoles.contains(guestUser)) {
+            this.userRoles.add(guestUser);
+            this.userStatuses.add(pendingUser);
+            return guestUser;
         }
 
         return null;
     }
 
     public UserRolePair addAdmin() {
-        //Update guest to admin
+        //Can only choose from the guests list.
+        //Update guest's role to admin.
         return null;
     }
 
