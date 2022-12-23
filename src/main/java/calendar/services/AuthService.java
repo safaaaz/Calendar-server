@@ -111,7 +111,7 @@ public class AuthService {
      */
     public String login(User temp) {
 
-        User user = userRepository.findByEmail(temp.getEmail());
+        User user = userRepository.findByEmail(temp.getEmail()).get();
 
         if (user.getPassword().equals(temp.getPassword())) {
             String token = Token.generate();
