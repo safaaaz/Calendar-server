@@ -72,7 +72,7 @@ public class EventController {
     @RequestMapping(value = "inviteGuest/{eventId}", method = RequestMethod.POST)
     public ResponseEntity<Event> inviteGuest(@PathVariable Long eventId, @RequestBody UserDTO userDTO) {
         if (isBlank(userDTO.email)) {
-            throw new MissingEventFieldException("email");
+            throw new IllegalArgumentException("missing guest email");
         }
 
         Event event = eventService.fetchEventById(eventId);
@@ -83,7 +83,7 @@ public class EventController {
     @RequestMapping(value = "removeGuest/{eventId}", method = RequestMethod.POST)
     public ResponseEntity<User> removeGuest(@PathVariable Long eventId, @RequestBody UserDTO userDTO) {
         if (isBlank(userDTO.email)) {
-            throw new MissingEventFieldException("email");
+            throw new IllegalArgumentException("missing guest email");
         }
 
         Event event = eventService.fetchEventById(eventId);
