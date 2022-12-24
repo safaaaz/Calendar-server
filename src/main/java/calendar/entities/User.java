@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -33,6 +34,9 @@ public class User implements Serializable {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private NotificationSettings notificationSettings;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<User> mySharedWithCalendars;
 
     User() {
     }
@@ -136,5 +140,14 @@ public class User implements Serializable {
         result = 31 * result + (myOwnedEvents != null ? myOwnedEvents.hashCode() : 0);
         result = 31 * result + (notificationSettings != null ? notificationSettings.hashCode() : 0);
         return result;
+    }
+
+    public User addUserToMyCalendars(User user) {
+        if (!this.mySharedWithCalendars.contains(user)) {
+            this.mySharedWithCalendars.add(user);
+            return user;
+        }
+
+        return null;
     }
 }

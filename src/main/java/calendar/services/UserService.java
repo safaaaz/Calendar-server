@@ -45,4 +45,18 @@ public class UserService {
 
         return currentSettings;
     }
+
+    //This method shares one user calendar with another user.
+    //user - the newly added user.
+    public User addUserToMyCalendars(User user, User sharedWithUser) {
+        //todo: can't add myself.
+
+        if (sharedWithUser.addUserToMyCalendars(user) != null) {
+            userRepository.save(sharedWithUser);
+        } else {
+            //throw user already in shared set.
+        }
+
+        return user;
+    }
 }
