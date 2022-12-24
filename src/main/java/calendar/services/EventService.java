@@ -71,7 +71,7 @@ public class EventService {
 
     public Event inviteGuest(Event event, User user) {
         if (event.getOrganizer() == user) {
-            throw new InvalidOperationException("organizer can't be a guest at his own event");
+            throw new IllegalOperationException("organizer can't be a guest at his own event");
         }
 
         if (event.inviteGuest(user) != null) {
@@ -88,7 +88,7 @@ public class EventService {
             eventRepository.save(event);
             return user;
         } else {
-            throw new InvalidOperationException("user is not a guest in this event");
+            throw new IllegalOperationException("user is not a guest in this event");
         }
     }
 }
