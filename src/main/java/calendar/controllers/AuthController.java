@@ -62,13 +62,12 @@ public class AuthController {
         String userEmail;
         try {
             response = restTemplate.exchange(url, HttpMethod.GET,entity, GitRoot.class);
-            logger.info(response.getBody());
             GitRoot gitResponse = response.getBody();
             userEmail = gitResponse.getEmailFromToken();
         } catch (RestClientException e) {
             throw new RuntimeException(e);
         }
-        return new ResponseEntity(authService.registerGithubUser(userEmail), HttpStatus.ACCEPTED);
+        return new ResponseEntity(authService.registerGithubUser(userEmail), HttpStatus.OK);
     }
     /**
      * email verification, at the end the guest becomes a user in database
