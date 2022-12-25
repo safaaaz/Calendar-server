@@ -124,7 +124,9 @@ public class User implements Serializable {
     public void setNotificationSettings(NotificationSettings notificationSettings) {
         this.notificationSettings = notificationSettings;
     }
-
+    public NotificationSettings getNotificationSettings() {
+        return notificationSettings;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

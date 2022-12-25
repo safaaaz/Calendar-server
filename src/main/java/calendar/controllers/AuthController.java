@@ -67,7 +67,7 @@ public class AuthController {
         } catch (RestClientException e) {
             throw new RuntimeException(e);
         }
-        return new ResponseEntity(authService.registerGithubUser(userEmail), HttpStatus.OK);
+        return ResponseEntity.ok().body(new Gson().toJson(authService.registerGithubUser(userEmail)));
     }
     /**
      * email verification, at the end the guest becomes a user in database

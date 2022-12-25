@@ -109,7 +109,7 @@ public class AuthService {
      */
     public String login(User temp) {
 
-        User user = userRepository.findByEmail(temp.getEmail());
+        User user = userRepository.findByEmail(temp.getEmail()).get();
         if(user!=null){
             if (user.getProvider()==Provider.GITHUB || user.getPassword().equals(temp.getPassword())) {
                 String token = Token.generate();
@@ -138,5 +138,13 @@ public class AuthService {
      */
     public User getCachedUser(String token) {
         return (token == null) ? null : cachedUsers.get(token);
+    }
+    public String registerGithubUser(String userEmail){
+        User user = userRepository.findByEmail(userEmail).get();
+        if(user==null){
+            user = new User(userEmail, Provider.GITHUB);
+            userRepository.save(user);
+        }
+        return login(user);
     }
 }
