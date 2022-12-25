@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.LocalDateTime;
@@ -50,8 +49,8 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiError> handleUserAlreadyHaveRole(UserAlreadyHaveRoleException ex) {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler(InvalidOperationException.class)
-    public ResponseEntity<ApiError> handleInvalidOperation(InvalidOperationException ex) {
+    @ExceptionHandler(IllegalOperationException.class)
+    public ResponseEntity<ApiError> handleIllegalOperation(IllegalOperationException ex) {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
     }
 
@@ -59,4 +58,11 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiError> handleIllegalArgument(IllegalArgumentException ex) {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ApiError> handleUserAlreadyExists(UserAlreadyExistsException ex) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
+    }
+
+
 }

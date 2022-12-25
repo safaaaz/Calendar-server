@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -35,6 +36,9 @@ public class User implements Serializable {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private NotificationSettings notificationSettings;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<User> mySharedWithCalendars;
 
 //    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 //    private Set<UserEnrolled> userEnrolled;
@@ -134,25 +138,35 @@ public class User implements Serializable {
 
         User user = (User) o;
 
-        if (!Objects.equals(id, user.id)) return false;
-        if (!Objects.equals(name, user.name)) return false;
-        if (!Objects.equals(email, user.email)) return false;
-        if (!Objects.equals(password, user.password)) return false;
-        if (timeZone != user.timeZone) return false;
-        if (!Objects.equals(myOwnedEvents, user.myOwnedEvents))
-            return false;
-        return Objects.equals(notificationSettings, user.notificationSettings);
+        if (!id.equals(user.id)) return false;
+        if (!name.equals(user.name)) return false;
+        if (!email.equals(user.email)) return false;
+        return password.equals(user.password);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        result = 31 * result + (timeZone != null ? timeZone.hashCode() : 0);
-        result = 31 * result + (myOwnedEvents != null ? myOwnedEvents.hashCode() : 0);
-        result = 31 * result + (notificationSettings != null ? notificationSettings.hashCode() : 0);
+        int result = id.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + email.hashCode();
+        result = 31 * result + password.hashCode();
         return result;
+    }
+
+    public User addUserToMyCalendars(User user) {
+        if (!this.mySharedWithCalendars.contains(user)) {
+            this.mySharedWithCalendars.add(user);
+            return user;
+        }
+
+        return null;
+    }
+
+    public Set<User> getMySharedWithCalendars() {
+        return mySharedWithCalendars;
+    }
+
+    public void setMySharedWithCalendars(Set<User> mySharedWithCalendars) {
+        this.mySharedWithCalendars = mySharedWithCalendars;
     }
 }

@@ -1,6 +1,7 @@
 package calendar.services;
 
 import calendar.DTO.CreateEventDTO;
+import calendar.DTO.UserDTO;
 import calendar.DTO.UpdateEventDTO;
 import calendar.controllers.EventController;
 import calendar.entities.Event;
@@ -15,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class EventService {
@@ -36,7 +39,7 @@ public class EventService {
             throw new InvalidEventDurationException(eventDTO.duration);
         }
 
-        //TODO: convert datetime from user's UTC time to default UTC with utility class
+        //TODO: convert datetime from user's UTC(+/-) time to default UTC with utility class
         //LocalDateTime defaultUtc = Converter.convertToDefaultUtc(eventDTO.dateTime);
 
 
@@ -50,6 +53,8 @@ public class EventService {
         if (!eventDTO.location.isEmpty()) {
             builder.location(eventDTO.location);
         }
+        builder.isPrivate(eventDTO.isPrivate);
+
 
         Event event = builder.build();
         eventRepository.save(event);
@@ -105,7 +110,7 @@ public class EventService {
 
     public Event inviteGuest(Event event, User user) {
         if (event.getOrganizer() == user) {
-            throw new InvalidOperationException("organizer can't be a guest at his own event");
+            throw new IllegalOperationException("organizer can't be a guest at his own event");
         }
 
         if (event.inviteGuest(user) != null) {
@@ -122,7 +127,21 @@ public class EventService {
             eventRepository.save(event);
             return user;
         } else {
-            throw new InvalidOperationException("user is not a guest in this event");
+            throw new IllegalOperationException("user is not a guest in this event");
         }
+    }
+
+    public List<Event> getSharedCalendarByMonth(User user, User other, int month) {
+        if (!user.getMySharedWithCalendars().contains(other)) {
+            throw new IllegalOperationException(String.format("You have to access to %s calendar", other.getName()));
+        }
+
+        List<Event> sharedEvents = this.getEventsByMonth(other, month).stream().filter(event -> event.isPrivate() == false).collect(Collectors.toList());
+        //TODO: change filter above^ to include private events that user is invited to.
+        return sharedEvents;
+    }
+
+    public List<UserDTO> shareList(User user) {
+      return user.getMySharedWithCalendars().stream().flatMap(u -> Stream.of(UserDTO.convertFromUser(u))).collect(Collectors.toList());
     }
 }
