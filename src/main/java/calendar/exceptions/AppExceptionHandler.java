@@ -46,5 +46,17 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiError> handleTokenNotFound(TokenNotFound ex) {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(UserAlreadyHaveRoleException.class)
+    public ResponseEntity<ApiError> handleUserAlreadyHaveRole(UserAlreadyHaveRoleException ex) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(InvalidOperationException.class)
+    public ResponseEntity<ApiError> handleInvalidOperation(InvalidOperationException ex) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
+    }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiError> handleIllegalArgument(IllegalArgumentException ex) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
+    }
 }

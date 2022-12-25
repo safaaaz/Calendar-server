@@ -42,10 +42,11 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public User(String name, String email, String password) {
+    public User(String name, String email, String password, TimeZone timeZone) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.timeZone = timeZone;
     }
 
     public Long getId() {

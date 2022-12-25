@@ -2,7 +2,7 @@ package calendar.entities;
 
 import calendar.DTO.UpdateEventDTO;
 import calendar.enums.UserRole;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import calendar.enums.UserStatus;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import javax.persistence.*;
@@ -48,28 +48,50 @@ public class Event implements Serializable {
     @OneToMany
     private List<Attachment> attachments;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
     private Set<UserRolePair> userRoles;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
     private Set<UserStatusPair> userStatuses;
 
     Event() {
+
     }
 
-    public UserRolePair addGuest(User user) {
-        UserRolePair pair = UserRolePair.newGuest(user);
-        if (!userRoles.contains(pair)) {
-            this.userRoles.add(pair);
-            return pair;
+    public UserRolePair inviteGuest(User user) {
+        UserRolePair guestUser = UserRolePair.newGuest(user);
+        UserStatusPair pendingUser = UserStatusPair.newPending(user);
+        if (!userRoles.contains(guestUser)) {
+            this.userRoles.add(guestUser);
+            this.userStatuses.add(pendingUser);
+            return guestUser;
         }
 
         return null;
     }
 
     public UserRolePair addAdmin() {
-        //Update guest to admin
+        //Can only choose from the guests list.
+        //Update guest's role to admin.
         return null;
+    }
+
+    public User removeGuest(User user) {
+        UserRolePair guest = UserRolePair.newGuest(user);
+        if (this.userRoles.contains(guest)) {
+            this.userRoles.remove(guest);
+            UserStatusPair statusPair = findUserStatusPair(this.userStatuses, user);
+            this.userStatuses.remove(statusPair);
+
+            return user;
+        }
+
+        return null;
+    }
+
+    //This method gets a specific user and return its current arrival status
+    public UserStatusPair findUserStatusPair(final Set<UserStatusPair> statusPairs, User user){
+        return statusPairs.stream().filter(pair -> pair.getUser().equals(user)).findFirst().get();
     }
 
     public static class Builder {

@@ -6,9 +6,7 @@ import calendar.controllers.EventController;
 import calendar.entities.Event;
 import calendar.entities.User;
 import calendar.enums.UserRole;
-import calendar.exceptions.InvalidEventDurationException;
-import calendar.exceptions.EventNotFoundException;
-import calendar.exceptions.PastDateException;
+import calendar.exceptions.*;
 import calendar.repositories.EventRepository;
 import calendar.utils.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -16,12 +14,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class EventService {
@@ -109,24 +103,26 @@ public class EventService {
         return "Event has been deleted";
     }
 
-    public Event addGuest(Event event, User user) {
+    public Event inviteGuest(Event event, User user) {
+        if (event.getOrganizer() == user) {
+            throw new InvalidOperationException("organizer can't be a guest at his own event");
+        }
 
-        event.addGuest(user);
-        eventRepository.save(event);
+        if (event.inviteGuest(user) != null) {
+            eventRepository.save(event);
+        } else {
+            throw new UserAlreadyHaveRoleException(UserRole.GUEST);
+        }
 
         return event;
     }
 
-//    public Event addRole(Event event, User user, UserRole role) {
-//        switch (role) {
-//            case GUEST:
-//                event.addGuest(event, user);
-//                break;
-//            case ADMIN:
-//                break;
-//            default:
-//        }
-//
-//        return event;
-//    }
+    public User removeGuest(Event event, User user) {
+        if (event.removeGuest(user) != null) {
+            eventRepository.save(event);
+            return user;
+        } else {
+            throw new InvalidOperationException("user is not a guest in this event");
+        }
+    }
 }

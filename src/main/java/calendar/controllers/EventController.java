@@ -5,7 +5,6 @@ import calendar.DTO.UpdateEventDTO;
 import calendar.DTO.UserDTO;
 import calendar.entities.Event;
 import calendar.entities.User;
-import calendar.enums.UserRole;
 import calendar.exceptions.MissingEventFieldException;
 
 import calendar.services.AuthService;
@@ -90,15 +89,26 @@ public class EventController {
         return ResponseEntity.ok(eventService.deleteEventById(eventId));
     }
 
-    @RequestMapping(value = "addGuest/{eventId}", method = RequestMethod.POST)
-    public ResponseEntity<Event> addGuest(@PathVariable Long eventId, @RequestBody UserDTO userDTO) {
+    @RequestMapping(value = "inviteGuest/{eventId}", method = RequestMethod.POST)
+    public ResponseEntity<Event> inviteGuest(@PathVariable Long eventId, @RequestBody UserDTO userDTO) {
         if (isBlank(userDTO.email)) {
-            throw new MissingEventFieldException("email");
+            throw new IllegalArgumentException("missing guest email");
         }
 
         Event event = eventService.fetchEventById(eventId);
         User guest = userService.fetchUserByEmail(userDTO.email);
 
-        return ResponseEntity.ok(eventService.addGuest(event, guest));
+        return ResponseEntity.ok(eventService.inviteGuest(event, guest));
+    }
+    @RequestMapping(value = "removeGuest/{eventId}", method = RequestMethod.POST)
+    public ResponseEntity<User> removeGuest(@PathVariable Long eventId, @RequestBody UserDTO userDTO) {
+        if (isBlank(userDTO.email)) {
+            throw new IllegalArgumentException("missing guest email");
+        }
+
+        Event event = eventService.fetchEventById(eventId);
+        User guest = userService.fetchUserByEmail(userDTO.email);
+
+        return ResponseEntity.ok(eventService.removeGuest(event, guest));
     }
 }
