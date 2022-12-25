@@ -6,6 +6,7 @@ import calendar.DTO.UpdateEventDTO;
 import calendar.controllers.EventController;
 import calendar.entities.Event;
 import calendar.entities.User;
+import calendar.entities.UserRolePair;
 import calendar.enums.UserRole;
 import calendar.exceptions.*;
 import calendar.repositories.EventRepository;
@@ -143,5 +144,14 @@ public class EventService {
 
     public List<UserDTO> shareList(User user) {
       return user.getMySharedWithCalendars().stream().flatMap(u -> Stream.of(UserDTO.convertFromUser(u))).collect(Collectors.toList());
+    }
+    public UserRole getUserRole(User user,Long eventId){
+        Event event = fetchEventById(eventId);
+        if(event.getOrganizer().getId().equals(user.getId())){
+            return UserRole.ORGANIZER;
+        }
+        Set<UserRolePair> userRoles = event.getUserRoles();
+        UserRolePair useRole=userRoles.stream().filter((role)->role.getUser().getId()==user.getId()).findAny().get();
+        return useRole.getRole();
     }
 }
