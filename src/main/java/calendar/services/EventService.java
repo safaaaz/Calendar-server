@@ -34,7 +34,7 @@ public class EventService {
             throw new InvalidEventDurationException(eventDTO.duration);
         }
 
-        //TODO: convert datetime from user's UTC time to default UTC with utility class
+        //TODO: convert datetime from user's UTC(+/-) time to default UTC with utility class
         //LocalDateTime defaultUtc = Converter.convertToDefaultUtc(eventDTO.dateTime);
 
 
@@ -48,6 +48,8 @@ public class EventService {
         if (!eventDTO.location.isEmpty()) {
             builder.location(eventDTO.location);
         }
+        builder.isPrivate(eventDTO.isPrivate);
+
 
         Event event = builder.build();
         eventRepository.save(event);
@@ -90,5 +92,15 @@ public class EventService {
         } else {
             throw new IllegalOperationException("user is not a guest in this event");
         }
+    }
+
+    public List<Event> getSharedCalendarByMonth(User user, User other, int month) {
+        if (!user.getMySharedWithCalendars().contains(other)) {
+            throw new IllegalOperationException(String.format("You have to access to %s calendar", other.getName()));
+        }
+
+        List<Event> sharedEvents = this.getEventsByMonth(other, month).stream().filter(event -> event.isPrivate() == false).collect(Collectors.toList());
+        //TODO: change filter above^ to include private events that user is invited to.
+        return sharedEvents;
     }
 }

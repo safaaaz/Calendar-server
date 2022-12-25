@@ -143,4 +143,12 @@ public class User implements Serializable {
 
         return null;
     }
+
+    public Set<User> getMySharedWithCalendars() {
+        return mySharedWithCalendars;
+    }
+
+    public void setMySharedWithCalendars(Set<User> mySharedWithCalendars) {
+        this.mySharedWithCalendars = mySharedWithCalendars;
+    }
 }
