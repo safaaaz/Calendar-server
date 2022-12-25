@@ -3,14 +3,16 @@ package calendar.controllers;
 import calendar.entities.Response;
 import calendar.entities.User;
 import calendar.services.AuthService;
+import calendar.utils.GitRoot;
 import calendar.utils.Validate;
 import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +51,25 @@ public class AuthController {
         return ResponseEntity.badRequest().build(); // 400
     }
 
+    @RequestMapping(value = "registerUsingGitHub", method = RequestMethod.GET)
+    public ResponseEntity<String> registerUsingGitHub(@RequestParam String code) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Accept","application/json");
+        HttpEntity<String> entity = new HttpEntity<>(null,headers);
+        String url="https://github.com/login/oauth/access_token?client_id=1b188eb629fe1fbd2c32&client_secret=61350975bf5f5ab0945133e5c5e247116c822adb&code="+code;
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<GitRoot> response = null;
+        String userEmail;
+        try {
+            response = restTemplate.exchange(url, HttpMethod.GET,entity, GitRoot.class);
+            logger.info(response.getBody());
+            GitRoot gitResponse = response.getBody();
+            userEmail = gitResponse.getEmailFromToken();
+        } catch (RestClientException e) {
+            throw new RuntimeException(e);
+        }
+        return new ResponseEntity(authService.registerGithubUser(userEmail), HttpStatus.ACCEPTED);
+    }
     /**
      * email verification, at the end the guest becomes a user in database
      *

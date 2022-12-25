@@ -1,10 +1,12 @@
 package calendar.entities;
 
+import calendar.enums.Provider;
 import calendar.enums.TimeZone;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -33,9 +35,24 @@ public class User implements Serializable {
 
 //    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 //    private Set<UserEnrolled> userEnrolled;
-
+    @Column(name = "auth_provider")
+    @Enumerated(EnumType.STRING)
+    private Provider provider;
     User() {
 
+    }
+
+    public User(String email, Provider provider) {
+        this.email = email;
+        this.provider = provider;
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
+    }
+
+    public Provider getProvider() {
+        return provider;
     }
 
     public User(String email, String password) {
