@@ -1,6 +1,7 @@
 package calendar.services;
 
 import calendar.DTO.CreateEventDTO;
+import calendar.DTO.UserDTO;
 import calendar.entities.Event;
 import calendar.entities.User;
 import calendar.enums.UserRole;
@@ -13,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class EventService {
@@ -102,5 +105,9 @@ public class EventService {
         List<Event> sharedEvents = this.getEventsByMonth(other, month).stream().filter(event -> event.isPrivate() == false).collect(Collectors.toList());
         //TODO: change filter above^ to include private events that user is invited to.
         return sharedEvents;
+    }
+
+    public List<UserDTO> shareList(User user) {
+      return user.getMySharedWithCalendars().stream().flatMap(u -> Stream.of(UserDTO.convertFromUser(u))).collect(Collectors.toList());
     }
 }

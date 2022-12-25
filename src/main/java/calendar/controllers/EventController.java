@@ -72,8 +72,8 @@ public class EventController {
 
     //This method gets all user events (private events excluded), if this
     //user has shared his calendar with me.
-    @RequestMapping(value = "getSharedCalendarByMonth/{month}", method = RequestMethod.POST)
-    public ResponseEntity<List<Event>>getSharedCalendarByMonth(@RequestHeader("token") String token, @PathVariable int month, @RequestBody UserDTO userDTO) {
+    @RequestMapping(value = "share/sharedCalendarByMonth/{month}", method = RequestMethod.POST)
+    public ResponseEntity<List<Event>>sharedCalendarByMonth(@RequestHeader("token") String token, @PathVariable int month, @RequestBody UserDTO userDTO) {
         if (isNull(month)) {
             throw new MissingEventFieldException("month");
         }
@@ -87,6 +87,15 @@ public class EventController {
         User other = userService.fetchUserByEmail(userDTO.email);
 
         return ResponseEntity.ok(eventService.getSharedCalendarByMonth(user,other,month));
+    }
+
+    @RequestMapping(value = "share/shareList", method = RequestMethod.GET)
+    public ResponseEntity<List<UserDTO>> shareList(@RequestHeader("token") String token) {
+
+        User user = authService.getCachedUser(token);
+        user = userService.fetchUserById(user.getId());
+
+        return ResponseEntity.ok(eventService.shareList(user));
     }
 
 //    @RequestMapping(value = "myEventsByMonth/{month}", method = RequestMethod.GET)
