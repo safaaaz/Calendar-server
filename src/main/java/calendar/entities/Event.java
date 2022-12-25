@@ -1,5 +1,6 @@
 package calendar.entities;
 
+import calendar.DTO.UpdateEventDTO;
 import calendar.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
@@ -23,8 +24,8 @@ public class Event implements Serializable {
     private String title;
 
     @JsonIncludeProperties(value = {"id"})
-    @ManyToOne (fetch = FetchType.LAZY)
-    @JoinColumn(name="organizer_id", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organizer_id", referencedColumnName = "id")
     private User organizer;
 
     @Column(name = "date_time")
@@ -53,8 +54,7 @@ public class Event implements Serializable {
     @OneToMany(cascade = CascadeType.ALL)
     private Set<UserStatusPair> userStatuses;
 
-    Event () {
-
+    Event() {
     }
 
     public UserRolePair addGuest(User user) {
@@ -123,14 +123,14 @@ public class Event implements Serializable {
     }
 
     private Event(Builder builder) {
-       this.title = builder.title;
-       this.organizer = builder.organizer;
-       this.dateTime = builder.dateTime;
-       this.duration = builder.duration;
-       this.description = builder.description;
-       this.isPrivate = builder.isPrivate;
-       this.location = builder.location;
-       this.attachments = builder.attachments;
+        this.title = builder.title;
+        this.organizer = builder.organizer;
+        this.dateTime = builder.dateTime;
+        this.duration = builder.duration;
+        this.description = builder.description;
+        this.isPrivate = builder.isPrivate;
+        this.location = builder.location;
+        this.attachments = builder.attachments;
     }
 
     public Event createNewSimpleEvent(String title, User organizer, LocalDateTime dateTime) {
@@ -164,6 +164,7 @@ public class Event implements Serializable {
     public boolean isPrivate() {
         return isPrivate;
     }
+
     public String getLocation() {
         return location;
     }
@@ -222,6 +223,16 @@ public class Event implements Serializable {
 
     public void setUserStatuses(Set<UserStatusPair> userStatuses) {
         this.userStatuses = userStatuses;
+    }
+
+    public void setEvent(UpdateEventDTO updateEventDTO) {
+        title = updateEventDTO.title;
+        dateTime = updateEventDTO.dateTime;
+        duration = updateEventDTO.duration;
+        description = updateEventDTO.description;
+        isPrivate = updateEventDTO.isPrivate;
+        location = updateEventDTO.location;
+        attachments = updateEventDTO.attachments;
     }
 
     @Override
