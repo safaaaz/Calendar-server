@@ -1,6 +1,7 @@
 package calendar.controllers;
 
 import calendar.DTO.CreateEventDTO;
+import calendar.DTO.UpdateEventDTO;
 import calendar.DTO.UserDTO;
 import calendar.entities.Event;
 import calendar.entities.User;
@@ -42,6 +43,8 @@ public class EventController {
     @RequestMapping(value = "add", method = RequestMethod.POST)
     public ResponseEntity<Event> addEvent(@RequestBody CreateEventDTO createEventDTO, @RequestHeader("token") String token) {
 
+        System.out.println(createEventDTO.toString());
+
         if (isBlank(createEventDTO.title)) {
             throw new MissingEventFieldException("title");
         }
@@ -54,6 +57,23 @@ public class EventController {
         //List<Attachment> = readAttachments(createEventDto.attachments);
 
         return ResponseEntity.ok(eventService.add(createEventDTO, organizer));
+    }
+
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public ResponseEntity<Event> updateEvent(@RequestBody UpdateEventDTO updateEventDTO, @RequestHeader("token") String token) {
+
+        System.out.println(updateEventDTO.toString());
+
+        if (isBlank(updateEventDTO.title)) {
+            throw new MissingEventFieldException("title");
+        }
+        if (isNull(updateEventDTO.dateTime)) {
+            throw new MissingEventFieldException("date and time");
+        }
+
+        User user = authService.getCachedUser(token);
+
+        return ResponseEntity.ok(eventService.updateEvent(updateEventDTO, user));
     }
     @RequestMapping(value = "getEventsByMonth/{month}", method = RequestMethod.GET)
     public ResponseEntity<List<Event>> getEventsByMonth(@RequestHeader(value="token") String token, @PathVariable int month){

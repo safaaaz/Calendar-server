@@ -1,5 +1,6 @@
 package calendar.entities;
 
+import calendar.DTO.UpdateEventDTO;
 import calendar.enums.UserRole;
 import calendar.enums.UserStatus;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
@@ -244,6 +245,16 @@ public class Event implements Serializable {
 
     public void setUserStatuses(Set<UserStatusPair> userStatuses) {
         this.userStatuses = userStatuses;
+    }
+
+    public void setEvent(UpdateEventDTO updateEventDTO) {
+        title = updateEventDTO.title;
+        dateTime = updateEventDTO.dateTime;
+        duration = updateEventDTO.duration;
+        description = updateEventDTO.description;
+        isPrivate = updateEventDTO.isPrivate;
+        location = updateEventDTO.location;
+        attachments = updateEventDTO.attachments;
     }
 
     @Override
