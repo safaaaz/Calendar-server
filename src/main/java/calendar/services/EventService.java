@@ -1,12 +1,12 @@
 package calendar.services;
 
 import calendar.DTO.CreateEventDTO;
+import calendar.DTO.UpdateEventDTO;
 import calendar.controllers.EventController;
 import calendar.entities.Event;
 import calendar.entities.User;
-import calendar.exceptions.InvalidEventDurationException;
-import calendar.exceptions.EventNotFoundException;
-import calendar.exceptions.PastDateException;
+import calendar.enums.UserRole;
+import calendar.exceptions.*;
 import calendar.repositories.EventRepository;
 import calendar.utils.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -14,12 +14,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class EventService {
@@ -60,16 +56,73 @@ public class EventService {
 
         return event;
     }
-    public List<Event> getEventsByMonth(User user, int month){
-        logger.info("EventService: get event by month "+month);
+
+    public Event updateEvent(UpdateEventDTO updateEventDTO, User organizer) {
+
+        // @@@ i think it should be on controller, we should discuss it @@@
+        if (Validate.isInPast(updateEventDTO.dateTime)) {
+            throw new PastDateException(updateEventDTO.dateTime);
+        }
+        if (!Validate.isValidDuration(updateEventDTO.duration)) {
+            throw new InvalidEventDurationException(updateEventDTO.duration);
+        }
+
+        Event.Builder builder = new Event.Builder(updateEventDTO.title, organizer, updateEventDTO.dateTime);
+
+        if (!updateEventDTO.attachments.isEmpty()) {
+            builder.attachments(updateEventDTO.attachments);
+        }
+        if (!updateEventDTO.description.isEmpty()) {
+            builder.description(updateEventDTO.description);
+        }
+        if (!updateEventDTO.location.isEmpty()) {
+            builder.location(updateEventDTO.location);
+        }
+
+        Event updatedEvent = builder.build();
+
+        Event currentEvent = eventRepository.findById(updateEventDTO.id).get();
+        currentEvent.setEvent(updateEventDTO);
+
+        eventRepository.save(currentEvent);
+
+        return currentEvent;
+    }
+
+    public List<Event> getEventsByMonth(User user, int month) {
+        logger.info("EventService: get event by month " + month);
         List<Event> events = user.getMyOwnedEvents()
                 .stream()
-                .filter(event->event.getDateTime().getMonth().getValue()==month)
+                .filter(event -> event.getDateTime().getMonth().getValue() == month)
                 .collect(Collectors.toList());
         return events;
     }
-    public String deleteEventById(Long id){
+
+    public String deleteEventById(Long id) {
         eventRepository.deleteById(id);
         return "Event has been deleted";
+    }
+
+    public Event inviteGuest(Event event, User user) {
+        if (event.getOrganizer() == user) {
+            throw new InvalidOperationException("organizer can't be a guest at his own event");
+        }
+
+        if (event.inviteGuest(user) != null) {
+            eventRepository.save(event);
+        } else {
+            throw new UserAlreadyHaveRoleException(UserRole.GUEST);
+        }
+
+        return event;
+    }
+
+    public User removeGuest(Event event, User user) {
+        if (event.removeGuest(user) != null) {
+            eventRepository.save(event);
+            return user;
+        } else {
+            throw new InvalidOperationException("user is not a guest in this event");
+        }
     }
 }

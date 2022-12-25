@@ -1,5 +1,6 @@
 package calendar.services;
 
+import calendar.entities.NotificationSettings;
 import calendar.entities.PreConfirmed;
 import calendar.entities.User;
 import calendar.enums.Provider;
@@ -118,14 +119,7 @@ public class AuthService {
         }
         return null;
     }
-    public String registerGithubUser(String userEmail){
-        User user = userRepository.findByEmail(userEmail);
-        if(user==null){
-            user = new User(userEmail, Provider.GITHUB);
-            userRepository.save(user);
-        }
-        return login(user);
-    }
+
     /**
      * checks if the given email is in the database
      *

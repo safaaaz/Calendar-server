@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 
 @Entity
 @Table(name = "user")
@@ -17,7 +17,7 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column(name = "name") //, nullable = false
+    @Column(name = "name")
     private String name;
     @Column(name = "email", nullable = false, unique = true)
     private String email;
@@ -33,13 +33,15 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)
     private List<Event> myOwnedEvents;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private NotificationSettings notificationSettings;
+
 //    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 //    private Set<UserEnrolled> userEnrolled;
     @Column(name = "auth_provider")
     @Enumerated(EnumType.STRING)
     private Provider provider;
     User() {
-
     }
 
     public User(String email, Provider provider) {
@@ -60,10 +62,11 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public User(String name, String email, String password) {
+    public User(String name, String email, String password, TimeZone timeZone) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.timeZone = timeZone;
     }
 
     public Long getId() {
@@ -118,7 +121,36 @@ public class User implements Serializable {
         this.myOwnedEvents = myOwnedEvents;
     }
 
-//    public void setPermissions(List<Permission> permissions) {
-//        this.permissions = permissions;
-//    }
+    public void setNotificationSettings(NotificationSettings notificationSettings) {
+        this.notificationSettings = notificationSettings;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+
+        User user = (User) o;
+
+        if (!Objects.equals(id, user.id)) return false;
+        if (!Objects.equals(name, user.name)) return false;
+        if (!Objects.equals(email, user.email)) return false;
+        if (!Objects.equals(password, user.password)) return false;
+        if (timeZone != user.timeZone) return false;
+        if (!Objects.equals(myOwnedEvents, user.myOwnedEvents))
+            return false;
+        return Objects.equals(notificationSettings, user.notificationSettings);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (timeZone != null ? timeZone.hashCode() : 0);
+        result = 31 * result + (myOwnedEvents != null ? myOwnedEvents.hashCode() : 0);
+        result = 31 * result + (notificationSettings != null ? notificationSettings.hashCode() : 0);
+        return result;
+    }
 }
