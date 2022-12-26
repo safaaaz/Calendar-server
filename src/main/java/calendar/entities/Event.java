@@ -47,7 +47,7 @@ public class Event implements Serializable {
     private String location;
 
     //@JsonIgnore
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
     private List<Attachment> attachments;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
@@ -256,7 +256,7 @@ public class Event implements Serializable {
         description = updateEventDTO.description;
         isPrivate = updateEventDTO.isPrivate;
         location = updateEventDTO.location;
-        attachments = updateEventDTO.attachments;
+        //attachments = updateEventDTO.attachments;
     }
 
     @Override

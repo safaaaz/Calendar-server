@@ -56,8 +56,6 @@ public class EventController {
         }
 
         User organizer = authService.getCachedUser(token);
-        //User organizer = userService.fetchUserById(createEventDTO.organizerId);
-        //List<Attachment> = readAttachments(createEventDto.attachments);
 
         return ResponseEntity.ok(eventService.add(createEventDTO, organizer));
     }
