@@ -8,15 +8,13 @@ import java.util.List;
 
 public class CreateEventDTO {
     public String title;
-    //public Long organizerId;
     public LocalDateTime dateTime;
     public int duration;
     public String description;
-
     public boolean isPrivate;
     public String location;
-    public List<Attachment> attachments = new ArrayList<>();
-    //public Set<UserEnrolled> userEnrolled;
+
+    public List<Attachment> attachments;
 
     @Override
     public String toString() {
@@ -27,7 +25,7 @@ public class CreateEventDTO {
                 ", description='" + description + '\'' +
                 ", isPrivate=" + isPrivate +
                 ", location='" + location + '\'' +
-                ", attachments=" + attachments +
+                ", attachmentsList=" + attachments +
                 '}';
     }
 }

@@ -12,15 +12,19 @@ public class Attachment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @JsonIncludeProperties(value = {"id"})
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id", referencedColumnName = "id")
-    private Event event;
+//    @JsonIncludeProperties(value = {"id"})
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "event_id", referencedColumnName = "id")
+//    private Event event;
 
     @Column(name = "attach", nullable = false)
     private String attachment;
 
     Attachment() {
+    }
+
+    public Attachment(String attachment) {
+        this.attachment = attachment;
     }
 
     public Long getId() {

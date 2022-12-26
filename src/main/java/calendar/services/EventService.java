@@ -4,6 +4,7 @@ import calendar.DTO.CreateEventDTO;
 import calendar.DTO.UserDTO;
 import calendar.DTO.UpdateEventDTO;
 import calendar.controllers.EventController;
+import calendar.entities.Attachment;
 import calendar.entities.Event;
 import calendar.entities.User;
 import calendar.entities.UserRolePair;
@@ -17,10 +18,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,16 +36,15 @@ public class EventService {
     }
 
     public Event add(CreateEventDTO eventDTO, User organizer) {
-        if (Validate.isInPast(eventDTO.dateTime)) {
-            throw new PastDateException(eventDTO.dateTime);
-        }
+//        if (Validate.isInPast(eventDTO.dateTime)) {
+//            throw new PastDateException(eventDTO.dateTime);
+//        }
         if (!Validate.isValidDuration(eventDTO.duration)) {
             throw new InvalidEventDurationException(eventDTO.duration);
         }
 
         //TODO: convert datetime from user's UTC(+/-) time to default UTC with utility class
         //LocalDateTime defaultUtc = Converter.convertToDefaultUtc(eventDTO.dateTime);
-
 
         Event.Builder builder = new Event.Builder(eventDTO.title, organizer, eventDTO.dateTime);
         if (!eventDTO.attachments.isEmpty()) {
@@ -60,7 +57,6 @@ public class EventService {
             builder.location(eventDTO.location);
         }
         builder.isPrivate(eventDTO.isPrivate);
-
 
         Event event = builder.build();
         eventRepository.save(event);
@@ -80,9 +76,9 @@ public class EventService {
 
         Event.Builder builder = new Event.Builder(updateEventDTO.title, organizer, updateEventDTO.dateTime);
 
-        if (!updateEventDTO.attachments.isEmpty()) {
-            builder.attachments(updateEventDTO.attachments);
-        }
+//        if (!updateEventDTO.attachments.isEmpty()) {
+//            builder.attachments(updateEventDTO.attachments);
+//        }
         if (!updateEventDTO.description.isEmpty()) {
             builder.description(updateEventDTO.description);
         }

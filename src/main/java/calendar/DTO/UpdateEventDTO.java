@@ -13,7 +13,6 @@ public class UpdateEventDTO extends CreateEventDTO{
                 ", description='" + description + '\'' +
                 ", isPrivate=" + isPrivate +
                 ", location='" + location + '\'' +
-                ", attachments=" + attachments +
                 '}';
     }
 }
