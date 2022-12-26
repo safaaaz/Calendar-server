@@ -10,6 +10,7 @@ import calendar.entities.UserRolePair;
 import calendar.enums.UserRole;
 import calendar.exceptions.*;
 import calendar.repositories.EventRepository;
+import calendar.repositories.UserRepository;
 import calendar.utils.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,6 +28,8 @@ public class EventService {
     @Autowired
     private EventRepository eventRepository;
     public static final Logger logger = LogManager.getLogger(EventService.class);
+    @Autowired
+    private UserRepository userRepository;
 
     public Event fetchEventById(Long id) {
         return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException("event not found with id " + id));
@@ -97,11 +100,9 @@ public class EventService {
 
     public List<Event> getEventsByMonth(User user, int month) {
         logger.info("EventService: get event by month " + month);
-        List<Event> events = user.getMyOwnedEvents()
-                .stream()
+        List<Event> events = Stream.concat(user.getMyOwnedEvents().stream(), user.getSharedEvents().stream())
                 .filter(event -> event.getDateTime().getMonth().getValue() == month)
                 .collect(Collectors.toList());
-
         return events;
     }
 
@@ -117,6 +118,8 @@ public class EventService {
 
         if (event.inviteGuest(user) != null) {
             eventRepository.save(event);
+            user.addSharedEvent(event);
+            userRepository.save(user);
         } else {
             throw new UserAlreadyHaveRoleException(UserRole.GUEST);
         }
