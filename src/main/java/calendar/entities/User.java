@@ -6,10 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "user")
@@ -34,6 +31,8 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)
     private List<Event> myOwnedEvents;
 
+    @ManyToMany(targetEntity = Event.class)
+    private List<Event> sharedEvents;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private NotificationSettings notificationSettings;
 
@@ -146,11 +145,7 @@ public class User implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + name.hashCode();
-        result = 31 * result + email.hashCode();
-        result = 31 * result + password.hashCode();
-        return result;
+        return Objects.hash(name, email, password);
     }
 
     public User addUserToMyCalendars(User user) {
@@ -168,5 +163,20 @@ public class User implements Serializable {
 
     public void setMySharedWithCalendars(Set<User> mySharedWithCalendars) {
         this.mySharedWithCalendars = mySharedWithCalendars;
+    }
+
+    public List<Event> getSharedEvents() {
+        return sharedEvents;
+    }
+
+    public void setSharedEvents(List<Event> sharedEvents) {
+        this.sharedEvents = sharedEvents;
+    }
+
+    public void addSharedEvent(Event event){
+        if(sharedEvents==null){
+            sharedEvents = new ArrayList<>();
+        }
+        sharedEvents.add(event);
     }
 }

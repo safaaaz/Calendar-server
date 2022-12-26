@@ -44,6 +44,7 @@ public class UserController {
     @RequestMapping(value = "share", method = RequestMethod.POST)
     public ResponseEntity<User> shareCalendar(@RequestHeader("token") String token, @RequestBody UserDTO userDTO) {
 
+        System.out.println("check");
         if (isBlank(userDTO.email)) {
             throw new MissingEventFieldException("email");
         }

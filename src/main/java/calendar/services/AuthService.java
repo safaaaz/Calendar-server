@@ -127,7 +127,7 @@ public class AuthService {
      * @return boolean
      */
     boolean isEmailInDatabase(String email) {
-        return (userRepository.findByEmail(email) != null);
+        return (userRepository.findByEmail(email).isPresent());
     }
 
     /**

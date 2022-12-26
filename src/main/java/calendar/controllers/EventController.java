@@ -123,8 +123,8 @@ public class EventController {
         return ResponseEntity.ok(eventService.deleteEventById(eventId));
     }
 
-    @RequestMapping(value = "inviteGuest/{eventId}", method = RequestMethod.POST)
-    public ResponseEntity<Event> inviteGuest(@PathVariable Long eventId, @RequestBody UserDTO userDTO) {
+    @RequestMapping(value = "inviteGuest", method = RequestMethod.POST)
+    public ResponseEntity<Event> inviteGuest(@RequestHeader Long eventId, @RequestBody UserDTO userDTO) {
         if (isBlank(userDTO.email)) {
             throw new IllegalArgumentException("missing guest email");
         }
