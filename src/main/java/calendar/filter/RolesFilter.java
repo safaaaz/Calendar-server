@@ -57,19 +57,33 @@ public class RolesFilter implements Filter {
                 String formatDateTime = event.getDateTime().format(format);
                 if(!jsonObject.get("title").equals(event.getTitle()) || jsonObject.getInt("duration") != event.getDuration() || !formatDateTime.equals(event.getDateTime().format(format))){
                     logger.info("No update permission for the admin");
-                    returnBadResponse(res);
+                    returnBadResponse(res,"Admin can't edit title,duration,date and time");
                 } else {
                     filterChain.doFilter(req, res);
                 }
             } else {
-                returnBadResponse(res);
+                returnBadResponse(res,"There is no update permissions for who is not ORGANIZER or ADMIN!");
 
+            }
+        }
+        //check the permission for the invite guest feature
+        if (((HttpServletRequest) servletRequest).getServletPath().startsWith("/event/inviteGuest")){
+            String token = req.getHeader("token");
+            Long eventId = Long.valueOf(req.getHeader("eventId"));
+            logger.info("User with token: "+token+" want to update event with id: "+eventId);
+            User user = authService.getCachedUser(token);
+            UserRole userRole = eventService.getUserRole(user,eventId);
+            if(userRole==UserRole.ORGANIZER || userRole==UserRole.ADMIN){
+                filterChain.doFilter(req, res);
+            }
+            else {
+                returnBadResponse(res,"Only Organizer and Admin can invite guests");
             }
         }
         filterChain.doFilter(req, res);
 
     }
-    private void returnBadResponse(HttpServletResponse res) throws IOException {
-        res.sendError(401, "There is no update permissions");
+    private void returnBadResponse(HttpServletResponse res,String errorMessage) throws IOException {
+        res.sendError(401, errorMessage);
     }
 }
