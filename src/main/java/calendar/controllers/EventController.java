@@ -1,6 +1,7 @@
 package calendar.controllers;
 
 import calendar.DTO.CreateEventDTO;
+import calendar.DTO.EmailList;
 import calendar.DTO.UpdateEventDTO;
 import calendar.DTO.UserDTO;
 import calendar.entities.Event;
@@ -16,11 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
 import static org.hibernate.internal.util.StringHelper.isBlank;
@@ -75,21 +74,19 @@ public class EventController {
 
     //This method gets all user events (private events excluded), if this
     //user has shared his calendar with me.
-    @RequestMapping(value = "share/sharedCalendarByMonth/{month}", method = RequestMethod.POST)
-    public ResponseEntity<List<Event>>sharedCalendarByMonth(@RequestHeader("token") String token, @PathVariable int month, @RequestBody UserDTO userDTO) {
+    @RequestMapping(value = "share/sharedCalendars/{month}", method = RequestMethod.POST)
+    public ResponseEntity<Map<String,List<Event>>> sharedCalendarByMonth(@RequestHeader("token") String token, @PathVariable int month, @RequestBody EmailList emailList) {
+        //TODO: check month number is legal(1-12)
         if (isNull(month)) {
             throw new MissingEventFieldException("month");
-        }
-        //TODO: check month number is legal(1-12)
-        if (isBlank(userDTO.email)){
-            throw new MissingEventFieldException("email");
         }
 
         User user = authService.getCachedUser(token);
         user = userService.fetchUserById(user.getId());
-        User other = userService.fetchUserByEmail(userDTO.email);
+        List<User> others = emailList.getEmails().stream().flatMap(email -> Stream.of(userService.fetchUserByEmail(email)))
+                                             .collect(Collectors.toList());
 
-        return ResponseEntity.ok(eventService.getSharedCalendarByMonth(user,other,month));
+        return ResponseEntity.ok(eventService.getSharedCalendarByMonth(user,others,month));
     }
 
     @RequestMapping(value = "share/shareList", method = RequestMethod.GET)

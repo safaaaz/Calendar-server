@@ -17,7 +17,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -136,14 +138,21 @@ public class EventService {
         }
     }
 
-    public List<Event> getSharedCalendarByMonth(User user, User other, int month) {
-        if (!user.getMySharedWithCalendars().contains(other)) {
-            throw new IllegalOperationException(String.format("You have to access to %s calendar", other.getName()));
+    //This function traverses a list of users and return all of their public events.
+    public Map<String,List<Event>> getSharedCalendarByMonth(User user, List<User> others, int month) {
+        for (User other: others) {
+            if (!user.getMySharedWithCalendars().contains(other)) {
+                throw new IllegalOperationException(String.format("NO ACCESS to %s calendar", other.getName()));
+            }
         }
 
-        List<Event> sharedEvents = this.getEventsByMonth(other, month).stream().filter(event -> event.isPrivate() == false).collect(Collectors.toList());
-        //TODO: change filter above^ to include private events that user is invited to.
-        return sharedEvents;
+        //events I want to return: the others' myOwnedEvents WITHOUT privates.
+        Map<String,List<Event>> eventsByEmail = new HashMap<>();
+        for (User other: others) {
+            List<Event> otherSharedEvents = this.getEventsByMonth(other, month).stream().filter(event -> event.isPrivate() == false).collect(Collectors.toList());
+            eventsByEmail.put(other.getEmail(), otherSharedEvents);
+        }
+        return eventsByEmail;
     }
 
     public List<UserDTO> shareList(User user) {
