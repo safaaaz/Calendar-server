@@ -101,6 +101,7 @@ public class EventService {
                 .stream()
                 .filter(event -> event.getDateTime().getMonth().getValue() == month)
                 .collect(Collectors.toList());
+
         return events;
     }
 
