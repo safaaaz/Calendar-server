@@ -146,11 +146,7 @@ public class User implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + name.hashCode();
-        result = 31 * result + email.hashCode();
-        result = 31 * result + password.hashCode();
-        return result;
+        return Objects.hash(name, email, password);
     }
 
     public User addUserToMyCalendars(User user) {
