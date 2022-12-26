@@ -28,6 +28,8 @@ public class Event implements Serializable {
     @JoinColumn(name = "organizer_id", referencedColumnName = "id")
     private User organizer;
 
+    @ManyToMany(targetEntity = User.class)
+    private List<User> users;
     @Column(name = "date_time")
     private LocalDateTime dateTime;
 
