@@ -38,5 +38,4 @@ public class MutableHttpServletRequest extends HttpServletRequestWrapper {
         }
         return Collections.enumeration(set);
     }
-
 }
