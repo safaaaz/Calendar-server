@@ -2,8 +2,8 @@ package calendar.services;
 
 import calendar.entities.NotificationSettings;
 import calendar.entities.PreConfirmed;
-import calendar.entities.Response;
 import calendar.entities.User;
+import calendar.enums.Provider;
 import calendar.exceptions.TokenNotFound;
 import calendar.exceptions.UserAlreadyRegistered;
 import calendar.repositories.PreConfirmedRepository;
@@ -96,8 +96,6 @@ public class AuthService {
         preConfirmedRepository.delete(preConfirmed);
 
         User user = new User(preConfirmed.getEmail(), preConfirmed.getPassword());
-        NotificationSettings notificationSettings = new NotificationSettings(user, true, true, true, true, true, true, true, true, true);
-        user.setNotificationSettings(notificationSettings);
         userRepository.save(user);
 
         return token;
@@ -112,10 +110,12 @@ public class AuthService {
     public String login(User temp) {
 
         User user = userRepository.findByEmail(temp.getEmail()).get();
-        if (user.getPassword().equals(temp.getPassword())) {
-            String token = Token.generate();
-            cachedUsers.put(token, user);
-            return token;
+        if(user!=null){
+            if (user.getProvider()==Provider.GITHUB || user.getPassword().equals(temp.getPassword())) {
+                String token = Token.generate();
+                cachedUsers.put(token, user);
+                return token;
+            }
         }
         return null;
     }
@@ -138,5 +138,13 @@ public class AuthService {
      */
     public User getCachedUser(String token) {
         return (token == null) ? null : cachedUsers.get(token);
+    }
+    public String registerGithubUser(String userEmail){
+        User user = userRepository.findByEmail(userEmail).get();
+        if(user==null){
+            user = new User(userEmail, Provider.GITHUB);
+            userRepository.save(user);
+        }
+        return login(user);
     }
 }
