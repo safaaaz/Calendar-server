@@ -56,7 +56,7 @@ public class TokenFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) servletResponse;
 
         // we exclude "/auth/*" route, because it is the only one which doesn't demand a token
-        if (!((HttpServletRequest) servletRequest).getServletPath().startsWith("/auth/")) {
+        if (!((HttpServletRequest) servletRequest).getServletPath().startsWith("/auth/") && !((HttpServletRequest) servletRequest).getServletPath().startsWith("/ws")) {
             String token = req.getHeader("token");
             if (token != null) {
                 User user = authService.getCachedUser(token);

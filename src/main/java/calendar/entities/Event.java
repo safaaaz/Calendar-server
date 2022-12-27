@@ -24,7 +24,7 @@ public class Event implements Serializable {
     private String title;
 
     @JsonIncludeProperties(value = {"id"})
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()//fetch = FetchType.LAZY)
     @JoinColumn(name = "organizer_id", referencedColumnName = "id")
     private User organizer;
 
@@ -50,7 +50,7 @@ public class Event implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
     private List<Attachment> attachments;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL, orphanRemoval=true)
     private Set<UserRolePair> userRoles;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)

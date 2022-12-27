@@ -4,7 +4,6 @@ import calendar.DTO.CreateEventDTO;
 import calendar.DTO.UserDTO;
 import calendar.DTO.UpdateEventDTO;
 import calendar.controllers.EventController;
-import calendar.entities.Attachment;
 import calendar.entities.Event;
 import calendar.entities.User;
 import calendar.entities.UserRolePair;
@@ -64,7 +63,7 @@ public class EventService {
         return event;
     }
 
-    public Event updateEvent(UpdateEventDTO updateEventDTO, User organizer) {
+    public EventController.ResponseUpdatedEvent updateEvent(UpdateEventDTO updateEventDTO, User user) {
 
         // @@@ i think it should be on controller, we should discuss it @@@
         if (Validate.isInPast(updateEventDTO.dateTime)) {
@@ -74,7 +73,7 @@ public class EventService {
             throw new InvalidEventDurationException(updateEventDTO.duration);
         }
 
-        Event.Builder builder = new Event.Builder(updateEventDTO.title, organizer, updateEventDTO.dateTime);
+        Event.Builder builder = new Event.Builder(updateEventDTO.title, user, updateEventDTO.dateTime);
 
 //        if (!updateEventDTO.attachments.isEmpty()) {
 //            builder.attachments(updateEventDTO.attachments);
@@ -92,8 +91,8 @@ public class EventService {
         currentEvent.setEvent(updateEventDTO);
 
         eventRepository.save(currentEvent);
-
-        return currentEvent;
+        EventController.ResponseUpdatedEvent resEvent = new EventController.ResponseUpdatedEvent(currentEvent.getId(),currentEvent.getTitle(),user.getEmail());
+        return resEvent;
     }
 
     public List<Event> getEventsByMonth(User user, int month) {
