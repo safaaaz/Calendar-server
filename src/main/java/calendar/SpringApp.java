@@ -23,7 +23,7 @@ public class SpringApp {
     public static void main(String[] args) {
         SpringApplication.run(SpringApp.class, args);
     }
-
+//
 //    @EventListener(ApplicationReadyEvent.class)
 //    public void registerDefaultUsers(){
 //        List<User> defaultUsers = new ArrayList<>();

@@ -109,7 +109,7 @@ public class EventService {
         return "Event has been deleted";
     }
 
-    public Event inviteGuest(Event event, User user) {
+    public UserDTO inviteGuest(Event event, User user) {
         if (event.getOrganizer() == user) {
             throw new IllegalOperationException("organizer can't be a guest at his own event");
         }
@@ -119,15 +119,16 @@ public class EventService {
             user.addSharedEvent(event);
             userRepository.save(user);
         } else {
-            throw new UserAlreadyHaveRoleException(UserRole.GUEST);
+            throw new UserAlreadyHaveRoleException("User already has a role in this event");
         }
 
-        return event;
+        return UserDTO.convertFromUser(user);
     }
 
     public User removeGuest(Event event, User user) {
         if (event.removeGuest(user) != null) {
             eventRepository.save(event);
+            //user.removeSharedEvent(event);
             return user;
         } else {
             throw new IllegalOperationException("user is not a guest in this event");
@@ -162,5 +163,20 @@ public class EventService {
         Set<UserRolePair> userRoles = event.getUserRoles();
         UserRolePair useRole=userRoles.stream().filter((role)->role.getUser().getId()==user.getId()).findAny().get();
         return useRole.getRole();
+    }
+
+    public UserDTO makeAdmin(Event event, User user) {
+        boolean alreadyAdmin = event.getUserRoles().stream().anyMatch(pair -> pair.getUser().getId() == user.getId() && pair.getRole() == UserRole.ADMIN);
+        if (alreadyAdmin) {
+            throw new UserAlreadyHaveRoleException("User already admin");
+        }
+        if(event.isGuest(user)) {
+            UserRolePair rolePair = event.getUserRoles().stream().filter(pair -> pair.getUser().getId() == user.getId()).findAny().get();
+            rolePair.setRole(UserRole.ADMIN);
+            eventRepository.save(event);
+            return UserDTO.convertFromUser(rolePair.getUser());
+        } else {
+            throw new IllegalOperationException("Admins must be chosen from the guests list");
+        }
     }
 }
