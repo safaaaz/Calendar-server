@@ -1,12 +1,12 @@
 package calendar.entities;
 
+import calendar.enums.Provider;
 import calendar.enums.TimeZone;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "user")
@@ -31,10 +31,33 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)
     private List<Event> myOwnedEvents;
 
+    @ManyToMany(targetEntity = Event.class)
+    private List<Event> sharedEvents;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private NotificationSettings notificationSettings;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<User> mySharedWithCalendars;
+
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+//    private Set<UserEnrolled> userEnrolled;
+    @Column(name = "auth_provider")
+    @Enumerated(EnumType.STRING)
+    private Provider provider;
     User() {
+    }
+
+    public User(String email, Provider provider) {
+        this.email = email;
+        this.provider = provider;
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
+    }
+
+    public Provider getProvider() {
+        return provider;
     }
 
     public User(String email, String password) {
@@ -42,10 +65,11 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public User(String name, String email, String password) {
+    public User(String name, String email, String password, TimeZone timeZone) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.timeZone = timeZone;
     }
 
     public Long getId() {
@@ -76,10 +100,6 @@ public class User implements Serializable {
 //        return permissions;
 //    }
 
-    public NotificationSettings getNotificationSettings() {
-        return notificationSettings;
-    }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -107,7 +127,9 @@ public class User implements Serializable {
     public void setNotificationSettings(NotificationSettings notificationSettings) {
         this.notificationSettings = notificationSettings;
     }
-
+    public NotificationSettings getNotificationSettings() {
+        return notificationSettings;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -115,25 +137,46 @@ public class User implements Serializable {
 
         User user = (User) o;
 
-        if (!Objects.equals(id, user.id)) return false;
-        if (!Objects.equals(name, user.name)) return false;
-        if (!Objects.equals(email, user.email)) return false;
-        if (!Objects.equals(password, user.password)) return false;
-        if (timeZone != user.timeZone) return false;
-        if (!Objects.equals(myOwnedEvents, user.myOwnedEvents))
-            return false;
-        return Objects.equals(notificationSettings, user.notificationSettings);
+        if (!id.equals(user.id)) return false;
+        if (!name.equals(user.name)) return false;
+        if (!email.equals(user.email)) return false;
+        return password.equals(user.password);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        result = 31 * result + (timeZone != null ? timeZone.hashCode() : 0);
-        result = 31 * result + (myOwnedEvents != null ? myOwnedEvents.hashCode() : 0);
-        result = 31 * result + (notificationSettings != null ? notificationSettings.hashCode() : 0);
-        return result;
+        return Objects.hash(name, email, password);
+    }
+
+    public User addUserToMyCalendars(User user) {
+        if (!this.mySharedWithCalendars.contains(user)) {
+            this.mySharedWithCalendars.add(user);
+            return user;
+        }
+
+        return null;
+    }
+
+    public Set<User> getMySharedWithCalendars() {
+        return mySharedWithCalendars;
+    }
+
+    public void setMySharedWithCalendars(Set<User> mySharedWithCalendars) {
+        this.mySharedWithCalendars = mySharedWithCalendars;
+    }
+
+    public List<Event> getSharedEvents() {
+        return sharedEvents;
+    }
+
+    public void setSharedEvents(List<Event> sharedEvents) {
+        this.sharedEvents = sharedEvents;
+    }
+
+    public void addSharedEvent(Event event){
+        if(sharedEvents==null){
+            sharedEvents = new ArrayList<>();
+        }
+        sharedEvents.add(event);
     }
 }

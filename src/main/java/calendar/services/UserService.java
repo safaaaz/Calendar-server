@@ -2,6 +2,8 @@ package calendar.services;
 
 import calendar.entities.NotificationSettings;
 import calendar.entities.User;
+import calendar.exceptions.IllegalOperationException;
+import calendar.exceptions.UserAlreadyExistsException;
 import calendar.exceptions.UserNotFoundException;
 import calendar.repositories.NotificationSettingsRepository;
 import calendar.repositories.UserRepository;
@@ -26,7 +28,7 @@ public class UserService {
     }
 
     public User fetchUserByEmail(String email) {
-       return userRepository.findByEmail(email);
+       return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("user not found with email " + email));
     }
 
     public NotificationSettings updateNotificationSettings(User user, NotificationSettings tempNotificationSettings){
@@ -44,5 +46,21 @@ public class UserService {
         //notificationSettingsRepository.save(newSettings);
 
         return currentSettings;
+    }
+
+    //This method shares one user calendar with another user.
+    //user - the newly added user.
+    public User addUserToMyCalendars(User user, User sharedWithUser) {
+        if (user.equals(sharedWithUser)) {
+            throw new IllegalOperationException("can't share calendar with myself");
+        }
+
+        if (sharedWithUser.addUserToMyCalendars(user) != null) {
+            userRepository.save(sharedWithUser);
+        } else {
+            throw new UserAlreadyExistsException(user.getEmail());
+        }
+
+        return user;
     }
 }

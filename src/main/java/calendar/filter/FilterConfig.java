@@ -2,6 +2,7 @@ package calendar.filter;
 
 
 import calendar.services.AuthService;
+import calendar.services.EventService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,13 @@ import org.springframework.context.annotation.Configuration;
 public class FilterConfig {
     public static final Logger logger = LogManager.getLogger(FilterConfig.class);
     private final AuthService authService;
+    private final EventService eventService;
+
 
     @Autowired
-    public FilterConfig(AuthService authService) {
+    public FilterConfig(AuthService authService, EventService eventService) {
         this.authService = authService;
+        this.eventService = eventService;
     }
 
     /**
@@ -50,6 +54,16 @@ public class FilterConfig {
         registrationBean.setFilter(customURLFilter);
         registrationBean.addUrlPatterns("/*");
         registrationBean.setOrder(2); //set precedence
+        return registrationBean;
+    }
+    @Bean
+    public FilterRegistrationBean<RolesFilter> rolesFilterBean() {
+        logger.info("FilterRegistrationBean has been created");
+        FilterRegistrationBean <RolesFilter> registrationBean = new FilterRegistrationBean<>();
+        RolesFilter customURLFilter = new RolesFilter(eventService,authService);
+        registrationBean.setFilter(customURLFilter);
+        registrationBean.addUrlPatterns("/*");
+        registrationBean.setOrder(3); //set precedence
         return registrationBean;
     }
 }
