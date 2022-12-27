@@ -31,6 +31,7 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)
     private List<Event> myOwnedEvents;
 
+    @JsonIgnore
     @ManyToMany(targetEntity = Event.class)
     private List<Event> sharedEvents;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
