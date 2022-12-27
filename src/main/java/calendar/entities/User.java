@@ -33,6 +33,7 @@ public class User implements Serializable {
 
     @ManyToMany(targetEntity = Event.class)
     private List<Event> sharedEvents;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private NotificationSettings notificationSettings;
 
