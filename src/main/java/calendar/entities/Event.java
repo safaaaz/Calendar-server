@@ -23,8 +23,8 @@ public class Event implements Serializable {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @JsonIncludeProperties(value = {"id"})
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIncludeProperties(value = {"id", "email"})
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "organizer_id", referencedColumnName = "id")
     private User organizer;
 
@@ -47,13 +47,13 @@ public class Event implements Serializable {
     private String location;
 
     //@JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attachment> attachments;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserRolePair> userRoles;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserStatusPair> userStatuses;
 
     Event() {
@@ -61,20 +61,15 @@ public class Event implements Serializable {
     }
 
     public UserRolePair inviteGuest(User user) {
-        UserRolePair guestUser = UserRolePair.newGuest(user);
-        UserStatusPair pendingUser = UserStatusPair.newPending(user);
-        if (!userRoles.contains(guestUser)) {
+        boolean alreadyGuestOrAdmin = userRoles.stream().anyMatch(pair -> pair.getUser().getId() == user.getId() && (pair.getRole() == UserRole.GUEST || pair.getRole() == UserRole.ADMIN));
+        if (!alreadyGuestOrAdmin) {
+            UserRolePair guestUser = UserRolePair.newGuest(user);
+            UserStatusPair pendingUser = UserStatusPair.newPending(user);
             this.userRoles.add(guestUser);
             this.userStatuses.add(pendingUser);
             return guestUser;
         }
 
-        return null;
-    }
-
-    public UserRolePair addAdmin() {
-        //Can only choose from the guests list.
-        //Update guest's role to admin.
         return null;
     }
 
@@ -92,8 +87,12 @@ public class Event implements Serializable {
     }
 
     //This method gets a specific user and return its current arrival status
-    public UserStatusPair findUserStatusPair(final Set<UserStatusPair> statusPairs, User user){
+    public UserStatusPair findUserStatusPair(final Set<UserStatusPair> statusPairs, User user) {
         return statusPairs.stream().filter(pair -> pair.getUser().equals(user)).findFirst().get();
+    }
+
+    public boolean isGuest(User user) {
+        return userRoles.stream().anyMatch(role -> role.getUser().getId() == user.getId() && role.getRole() == UserRole.GUEST);
     }
 
     public static class Builder {

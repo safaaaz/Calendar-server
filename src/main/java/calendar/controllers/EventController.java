@@ -6,6 +6,7 @@ import calendar.DTO.UpdateEventDTO;
 import calendar.DTO.UserDTO;
 import calendar.entities.Event;
 import calendar.entities.User;
+import calendar.entities.UserRolePair;
 import calendar.exceptions.MissingEventFieldException;
 
 import calendar.services.AuthService;
@@ -122,7 +123,7 @@ public class EventController {
     }
 
     @RequestMapping(value = "inviteGuest", method = RequestMethod.POST)
-    public ResponseEntity<Event> inviteGuest(@RequestHeader Long eventId, @RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> inviteGuest(@RequestHeader Long eventId, @RequestBody UserDTO userDTO) {
         if (isBlank(userDTO.email)) {
             throw new IllegalArgumentException("missing guest email");
         }
@@ -159,5 +160,16 @@ public class EventController {
         User user = authService.getCachedUser(token);
 
         return ResponseEntity.ok(eventService.updateEvent(updateEventDTO, user));
+    }
+    @RequestMapping(value = "/makeAdmin", method = RequestMethod.POST)
+    public ResponseEntity<UserDTO> makeAdmin(@RequestBody UserDTO userDTO, @RequestHeader("eventId") Long eventId) {
+        if (isBlank(userDTO.email)) {
+            throw new IllegalArgumentException("missing guest email");
+        }
+
+        Event event = eventService.fetchEventById(eventId);
+        User user = userService.fetchUserByEmail(userDTO.email);
+
+        return ResponseEntity.ok(eventService.makeAdmin(event,user));
     }
 }
