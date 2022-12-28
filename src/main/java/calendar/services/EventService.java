@@ -121,7 +121,9 @@ public class EventService {
             throw new UserAlreadyHaveRoleException("User already has a role in this event");
         }
 
-        return UserDTO.convertFromUser(user);
+        UserDTO userDTO = UserDTO.convertFromUser(user);
+        userDTO.setEventId(event.getId());
+        return userDTO;
     }
 
     public User removeGuest(Event event, User user) {

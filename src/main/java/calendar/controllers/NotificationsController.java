@@ -1,8 +1,10 @@
 package calendar.controllers;
 
+import calendar.DTO.UserDTO;
 import calendar.entities.Event;
 import calendar.entities.User;
 import calendar.entities.UserRolePair;
+import calendar.repositories.EventRepository;
 import calendar.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.MessageConversionException;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 public class NotificationsController {
     @Autowired
     private EventService eventService;
+    @Autowired
+    private EventRepository eventRepository;
 
     @MessageExceptionHandler()
     @MessageMapping("/update/")
@@ -33,6 +37,8 @@ public class NotificationsController {
                 .filter(user -> user.getNotificationSettings().getEventDataChanged() && user.getNotificationSettings().getByPopUp())
                 .map(User::getEmail)
                 .collect(Collectors.toList());
+        System.out.println(event.getOrganizer().getNotificationSettings());
+
         if(event.getOrganizer().getNotificationSettings().getEventDataChanged() && event.getOrganizer().getNotificationSettings().getByPopUp()){
             relevantUsers.add(event.getOrganizer().getEmail());
         }
@@ -41,7 +47,24 @@ public class NotificationsController {
         String message ="user with email: "+resEvent.getEditorEmail()+" update event with title: "+resEvent.getEventTitle();
         return new NotificationDetails(message,relevantUsers);
     }
-
+    @MessageExceptionHandler()
+    @MessageMapping("/inviteGuest/")
+    @SendTo("/topic/updates/")
+    public NotificationDetails inviteGuestNotification(UserDTO invitedUser) {
+        System.out.println(invitedUser);
+        Event event = eventService.fetchEventById(invitedUser.getEventId());
+        if(event==null){return null;}
+        List<String> relevantUsers = event.getUserRoles().stream()
+                .map(UserRolePair::getUser)
+                .map(User::getEmail)
+                .collect(Collectors.toList());
+        System.out.println(event.getOrganizer().getNotificationSettings());
+        if(event.getOrganizer().getNotificationSettings().getByPopUp()){
+            relevantUsers.add(event.getOrganizer().getEmail());
+        }
+        String message ="user with email: "+invitedUser.getEmail()+" has been invited to event : "+event.getTitle();
+        return new NotificationDetails(message,relevantUsers);
+    }
     public static class NotificationDetails{
         String message;
         List<String> relevantUsers;

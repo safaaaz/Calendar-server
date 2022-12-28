@@ -98,6 +98,7 @@ public class AuthService {
         User user = new User(preConfirmed.getEmail(), preConfirmed.getPassword());
         NotificationSettings notificationSettings = new NotificationSettings(user, true, true, true, true, true, true, true, true, true);
         user.setNotificationSettings(notificationSettings);
+        user.setProvider(Provider.LOCAL);
         userRepository.save(user);
 
         return token;

@@ -77,7 +77,34 @@ public class RolesFilter implements Filter {
                 filterChain.doFilter(req, res);
             }
             else {
-                returnBadResponse(res,"Only Organizer and Admin can invite guests");
+                returnBadResponse(res,"Only Organizer and Admins can invite guests");
+            }
+        }
+
+        //check the permission for the make admin feature
+        if (((HttpServletRequest) servletRequest).getServletPath().startsWith("/event/makeAdmin")){
+            String token = req.getHeader("token");
+            Long eventId = Long.valueOf(req.getHeader("eventId"));
+            User user = authService.getCachedUser(token);
+            UserRole userRole = eventService.getUserRole(user,eventId);
+            if(userRole==UserRole.ORGANIZER){
+                filterChain.doFilter(req, res);
+            }
+            else {
+                returnBadResponse(res,"Only Organizer can make admin");
+            }
+        }
+        //check the permission for the delete event feature
+        if (((HttpServletRequest) servletRequest).getServletPath().startsWith("/event/delete")){
+            String token = req.getHeader("token");
+            Long eventId = Long.valueOf(req.getHeader("eventId"));
+            User user = authService.getCachedUser(token);
+            UserRole userRole = eventService.getUserRole(user,eventId);
+            if(userRole==UserRole.ORGANIZER){
+                filterChain.doFilter(req, res);
+            }
+            else {
+                returnBadResponse(res,"Only Organizer can delete the event");
             }
         }
         filterChain.doFilter(req, res);
