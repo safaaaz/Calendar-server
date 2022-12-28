@@ -65,7 +65,6 @@ public class TokenFilter implements Filter {
                     req.setAttribute("token", token);
                     req.setAttribute("user", user);
                     req.setAttribute("eventId",req.getHeader("eventId"));
-                    logger.info(req.getAttribute("body"));
                     filterChain.doFilter(req, res);
                 } else returnBadResponse(res);
             } else returnBadResponse(res);

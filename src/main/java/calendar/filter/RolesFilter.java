@@ -53,16 +53,13 @@ public class RolesFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) servletResponse;
         String path = ((HttpServletRequest) servletRequest).getServletPath();
         if (path.startsWith("/event/")) {
-            logger.info(path.split("/")[2]);
-            logger.info(OPERATIONS.UPDATE);
-            List<UserRole> opr = permissionsMap.get(path.split("/")[2]);
-            if (opr != null) {
-                if (!opr.contains(getUserRole(req))) {
+            List<UserRole> roles = permissionsMap.get(path.split("/")[2]);
+            if (roles != null) {
+                if (!roles.contains(getUserRole(req))) {
                     returnBadResponse(res, "The user have no permissions to do this operation");
-                }
-            }
-        }
-        filterChain.doFilter(servletRequest, res);
+                } else filterChain.doFilter(req, res);
+            } else filterChain.doFilter(req, res);
+        } else filterChain.doFilter(req, res);
     }
 /*
         //check the permission for the update feature
