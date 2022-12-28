@@ -4,6 +4,8 @@ import calendar.DTO.UpdateEventDTO;
 import calendar.enums.UserRole;
 import calendar.enums.UserStatus;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.io.Serializable;

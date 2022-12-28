@@ -69,7 +69,7 @@ public class EventService {
             throw new InvalidEventDurationException(updateEventDTO.duration);
         }
 
-        Event.Builder builder = new Event.Builder(updateEventDTO.title, organizer, updateEventDTO.dateTime);
+        Event.Builder builder = new Event.Builder(updateEventDTO.title, user, updateEventDTO.dateTime);
 
 //        if (!updateEventDTO.attachments.isEmpty()) {
 //            builder.attachments(updateEventDTO.attachments);
@@ -87,8 +87,8 @@ public class EventService {
         currentEvent.setEvent(updateEventDTO);
 
         eventRepository.save(currentEvent);
-
-        return currentEvent;
+        EventController.ResponseUpdatedEvent resEvent = new EventController.ResponseUpdatedEvent(currentEvent.getId(),currentEvent.getTitle(),user.getEmail());
+        return resEvent;
     }
 
     public List<Event> getEventsByMonth(User user, int month) {
@@ -100,6 +100,9 @@ public class EventService {
     }
 
     public String deleteEventById(Long id) {
+        Event event = eventRepository.findById(id).get();
+        List<User> userList = userRepository.findAll();
+        userList.stream().forEach((user) -> {user.getSharedEvents().remove(event);});
         eventRepository.deleteById(id);
         return "Event has been deleted";
     }
@@ -117,7 +120,9 @@ public class EventService {
             throw new UserAlreadyHaveRoleException("User already has a role in this event");
         }
 
-        return UserDTO.convertFromUser(user);
+        UserDTO userDTO = UserDTO.convertFromUser(user);
+        userDTO.setEventId(event.getId());
+        return userDTO;
     }
 
     public User removeGuest(Event event, User user) {

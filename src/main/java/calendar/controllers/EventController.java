@@ -125,6 +125,12 @@ public class EventController {
         return ResponseEntity.ok(eventService.deleteEventById(eventId));
     }
 
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
+    public ResponseEntity<String> deleteEventById(@RequestHeader("eventId") Long eventId){
+        logger.info("In delete event by its id");
+        return ResponseEntity.ok(eventService.deleteEventById(eventId));
+    }
+
     @RequestMapping(value = "inviteGuest", method = RequestMethod.POST)
     public ResponseEntity<UserDTO> inviteGuest(@RequestHeader Long eventId, @RequestBody UserDTO userDTO) {
         if (isBlank(userDTO.email)) {
@@ -149,7 +155,7 @@ public class EventController {
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public ResponseEntity<Event> updateEvent(@RequestBody UpdateEventDTO updateEventDTO, @RequestHeader("token") String token) {
+    public ResponseEntity<ResponseUpdatedEvent> updateEvent(@RequestBody UpdateEventDTO updateEventDTO, @RequestHeader("token") String token) {
 
         System.out.println(updateEventDTO.toString());
 
@@ -165,6 +171,38 @@ public class EventController {
         notificationService.sendUpdateEventNotification(updateEventDTO);
 
         return ResponseEntity.ok(updatedEvent);
+    }
+    public static class ResponseUpdatedEvent{
+        private Long eventId;
+        private String eventTitle;
+        private String editorEmail;
+
+        @Override
+        public String toString() {
+            return "ResponseUpdatedEvent{" +
+                    "eventId=" + eventId +
+                    ", eventTitle='" + eventTitle + '\'' +
+                    ", editorEmail='" + editorEmail + '\'' +
+                    '}';
+        }
+
+        public ResponseUpdatedEvent(Long eventId, String eventTitle, String editorEmail) {
+            this.eventId = eventId;
+            this.eventTitle = eventTitle;
+            this.editorEmail = editorEmail;
+        }
+        public ResponseUpdatedEvent(){}
+        public Long getEventId() {
+            return eventId;
+        }
+
+        public String getEventTitle() {
+            return eventTitle;
+        }
+
+        public String getEditorEmail() {
+            return editorEmail;
+        }
     }
     @RequestMapping(value = "/makeAdmin", method = RequestMethod.POST)
     public ResponseEntity<UserDTO> makeAdmin(@RequestBody UserDTO userDTO, @RequestHeader("eventId") Long eventId) {
