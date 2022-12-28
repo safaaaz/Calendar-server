@@ -50,7 +50,7 @@ public class Event implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attachment> attachments;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserRolePair> userRoles;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
