@@ -4,6 +4,7 @@ import calendar.DTO.CreateEventDTO;
 import calendar.DTO.UserDTO;
 import calendar.DTO.UpdateEventDTO;
 import calendar.controllers.EventController;
+import calendar.entities.Attachment;
 import calendar.entities.Event;
 import calendar.entities.User;
 import calendar.entities.UserRolePair;

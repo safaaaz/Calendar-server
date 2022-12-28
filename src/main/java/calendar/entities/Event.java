@@ -3,6 +3,7 @@ package calendar.entities;
 import calendar.DTO.UpdateEventDTO;
 import calendar.enums.UserRole;
 import calendar.enums.UserStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -48,11 +49,11 @@ public class Event implements Serializable {
     @Column(name = "location")
     private String location;
 
-    //@JsonIgnore
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attachment> attachments;
 
-    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<UserRolePair> userRoles;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

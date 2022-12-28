@@ -92,9 +92,7 @@ public class AuthService {
 
         preConfirmedRepository.delete(preConfirmed);
 
-        User user = new User(preConfirmed.getEmail(), preConfirmed.getPassword());
-        NotificationSettings notificationSettings = new NotificationSettings(user, true, true, true, true, true, true, true, true, true);
-        user.setNotificationSettings(notificationSettings);
+        User user = User.newUserWithDefaultSettings(preConfirmed.getEmail(), preConfirmed.getPassword());
         user.setProvider(Provider.LOCAL);
         userRepository.save(user);
 
