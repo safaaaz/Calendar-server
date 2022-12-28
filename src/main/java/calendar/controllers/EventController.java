@@ -11,6 +11,7 @@ import calendar.exceptions.MissingEventFieldException;
 
 import calendar.services.AuthService;
 import calendar.services.EventService;
+import calendar.services.NotificationService;
 import calendar.services.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,6 +37,8 @@ public class EventController {
     private UserService userService;
     @Autowired
     private AuthService authService;
+    @Autowired
+    private NotificationService notificationService;
 
     public static final Logger logger = LogManager.getLogger(EventController.class);
 
@@ -158,6 +161,11 @@ public class EventController {
         }
 
         User user = authService.getCachedUser(token);
+
+        // lets assume everything is okay, thats is why we call the function
+        // in general we should wait till the update is finished and then send notification
+
+        notificationService.sendUpdateEventNotification(updateEventDTO);
 
         return ResponseEntity.ok(eventService.updateEvent(updateEventDTO, user));
     }
