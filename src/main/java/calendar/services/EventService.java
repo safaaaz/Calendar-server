@@ -64,7 +64,7 @@ public class EventService {
         return event;
     }
 
-    public Event updateEvent(UpdateEventDTO updateEventDTO, User organizer) {
+    public EventController.ResponseUpdatedEvent updateEvent(UpdateEventDTO updateEventDTO, User user) {
         if (!Validate.isValidDuration(updateEventDTO.duration)) {
             throw new InvalidEventDurationException(updateEventDTO.duration);
         }
