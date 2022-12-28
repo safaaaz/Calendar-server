@@ -142,12 +142,46 @@ public class AuthService {
     public User getCachedUser(String token) {
         return (token == null) ? null : cachedUsers.get(token);
     }
-    public String registerGithubUser(String userEmail){
+    public ReturnUserForGithub registerGithubUser(String userEmail){
         User user = userRepository.findByEmail(userEmail).get();
         if(user==null){
             user = new User(userEmail, Provider.GITHUB);
             userRepository.save(user);
         }
-        return login(user);
+        return new ReturnUserForGithub(login(user),userEmail);
+    }
+    public class ReturnUserForGithub{
+        String token;
+        String email;
+
+        public ReturnUserForGithub(String token, String email) {
+            this.token = token;
+            this.email = email;
+        }
+        ReturnUserForGithub(){}
+
+        @Override
+        public String toString() {
+            return "ReturnUserForGithub{" +
+                    "token='" + token + '\'' +
+                    ", email='" + email + '\'' +
+                    '}';
+        }
+
+        public String getToken() {
+            return token;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
     }
 }

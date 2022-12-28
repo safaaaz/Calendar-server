@@ -1,6 +1,5 @@
 package calendar.controllers;
 
-import calendar.entities.Response;
 import calendar.entities.User;
 import calendar.services.AuthService;
 import calendar.utils.GitRoot;
@@ -14,9 +13,6 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @CrossOrigin
@@ -56,11 +52,12 @@ public class AuthController {
 
     /**
      * Authentication Using GitHub Account
+     *
      * @param code - the code that the client get from GitHub
      * @return a new token for the user that logged in
      */
     @RequestMapping(value = "registerUsingGitHub", method = RequestMethod.GET)
-    public ResponseEntity<String> registerUsingGitHub(@RequestParam String code) {
+    public ResponseEntity<AuthService.ReturnUserForGithub> registerUsingGitHub(@RequestParam String code) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Accept","application/json");
         HttpEntity<String> entity = new HttpEntity<>(null,headers);
@@ -75,7 +72,7 @@ public class AuthController {
         } catch (RestClientException e) {
             throw new RuntimeException(e);
         }
-        return ResponseEntity.ok().body(new Gson().toJson(authService.registerGithubUser(userEmail)));
+        return ResponseEntity.ok().body(authService.registerGithubUser(userEmail));
     }
     /**
      * email verification, at the end the guest becomes a user in database
