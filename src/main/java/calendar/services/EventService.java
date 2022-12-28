@@ -64,6 +64,13 @@ public class EventService {
         return event;
     }
 
+
+    /**
+     * Updates an existing event with new details.
+     * @param updateEventDTO A data transfer object containing the new event details.
+     * @param user The user that is making the request.
+     * @return An object to represent the newly updated event.
+     */
     public EventController.ResponseUpdatedEvent updateEvent(UpdateEventDTO updateEventDTO, User user) {
         if (!Validate.isValidDuration(updateEventDTO.duration)) {
             throw new InvalidEventDurationException(updateEventDTO.duration);
