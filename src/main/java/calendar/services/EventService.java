@@ -4,6 +4,7 @@ import calendar.DTO.CreateEventDTO;
 import calendar.DTO.UserDTO;
 import calendar.DTO.UpdateEventDTO;
 import calendar.controllers.EventController;
+import calendar.entities.Attachment;
 import calendar.entities.Event;
 import calendar.entities.User;
 import calendar.entities.UserRolePair;
@@ -77,11 +78,6 @@ public class EventService {
      * @return An object to represent the newly updated event.
      */
     public EventController.ResponseUpdatedEvent updateEvent(UpdateEventDTO updateEventDTO, User user) {
-
-        // @@@ i think it should be on controller, we should discuss it @@@
-        if (Validate.isInPast(updateEventDTO.dateTime)) {
-            throw new PastDateException(updateEventDTO.dateTime);
-        }
         if (!Validate.isValidDuration(updateEventDTO.duration)) {
             throw new InvalidEventDurationException(updateEventDTO.duration);
         }
