@@ -23,34 +23,45 @@ public class UserService {
     public User createUser(User user) {
         return userRepository.save(user);
     }
-
+    /**
+     * get the user from the database by his id
+     * @param id
+     * @return user
+     * @throws UserNotFoundException - if user not found
+     */
     public User fetchUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("user not found with id " + id));
     }
 
+    /**
+     * get the user from the database by his email
+     * @param email
+     * @return user
+     * @throws UserNotFoundException - if user not found
+     */
     public User fetchUserByEmail(String email) {
        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("user not found with email " + email));
     }
 
+    /**
+     * Update notification settings for the user
+     * @param user
+     * @param tempNotificationSettings
+     * @return current user's settings
+     */
     public NotificationSettings updateNotificationSettings(User user, NotificationSettings tempNotificationSettings){
-
-        //NotificationSettings currentSettings = notificationSettingsRepository.findByUserId(user.getId()).orElseThrow(() -> {throw new UserNotFoundException("user was not found, notifications settings update failed");});
-        //notificationSettingsRepository.delete(currentSettings);
-        //userRepository.delete(user);
-
-        //NotificationSettings newSettings = new NotificationSettings(user,tempNotificationSettings.getByEmail(), tempNotificationSettings.getByPopUp(), tempNotificationSettings.getUserStatusChanged(), tempNotificationSettings.getEventDataChanged(), tempNotificationSettings.getEventCanceled(), tempNotificationSettings.getUserWasUninvited(), tempNotificationSettings.getRemind1MinBefore(), tempNotificationSettings.getRemind5MinBefore(), tempNotificationSettings.getRemind10MinBefore());
-        NotificationSettings currentSettings = user.getNotificationSettings();
+       NotificationSettings currentSettings = user.getNotificationSettings();
         currentSettings.updateNotificationSettings(tempNotificationSettings);
-
         userRepository.save(user);
-
-        //notificationSettingsRepository.save(newSettings);
-
         return currentSettings;
     }
 
-    //This method shares one user calendar with another user.
-    //user - the newly added user.
+    /**
+     * This method shares one user calendar with another user
+     * @param user - the newly added user
+     * @param sharedWithUser
+     * @return UserDTO - added user
+     */
     public UserDTO addUserToMyCalendars(User user, User sharedWithUser) {
         if (user.equals(sharedWithUser)) {
             throw new IllegalOperationException("can't share calendar with myself");

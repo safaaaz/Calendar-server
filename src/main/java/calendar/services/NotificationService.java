@@ -38,8 +38,11 @@ public class NotificationService {
         this.logger = LogManager.getLogger(AuthService.class.getName());
     }
 
+    /**
+     * If the user update an event details, email message will send to all the invited users
+     * @param updateEventDTO - the updated event
+     */
     public void sendUpdateEventNotification(UpdateEventDTO updateEventDTO) {
-
         Long eventId = updateEventDTO.id;
         Event event = eventRepository.findById(eventId).orElseThrow(() -> {
             throw new EventNotFoundException("Event was not found for id: " + eventId);
@@ -47,34 +50,28 @@ public class NotificationService {
         Set<UserRolePair> userRoles = event.getUserRoles();
 
         for (UserRolePair userRolePair : userRoles) {
-
-            System.out.println((long) userRolePair.getId());
-
             User user = userRepository.findById(userRolePair.getUser().getId()).orElseThrow(() -> {
                 throw new UserNotFoundException("User was not found for id: " + userRolePair.getId());
             });
 
-            System.out.println("1-@@@@@@@@@@@@@@@@@@");
-            System.out.println(user.toString());
-            System.out.println("@@@@@@@@@@@@@@@@@@");
-
             NotificationSettings notificationSettings = notificationSettingsRepository.findByUserId(user.getId()).orElseThrow(() -> {
                 throw new NotificationSettingsNotFoundException("Notification settings were not found for user id:" + user.getId());
             });
-            System.out.println("2-@@@@@@@@@@@@@@@@@@");
-            System.out.println(notificationSettings);
-            System.out.println("@@@@@@@@@@@@@@@@@@");
             if (notificationSettings.getByEmail() && notificationSettings.getEventDataChanged()) {
                 sendEmail(user.getEmail(), "event was updated", "event was updated");
             }
         }
     }
 
+    /**
+     * send email to user
+     * @param destination - user's email
+     * @param title - message title
+     * @param txt
+     */
     private void sendEmail(String destination, String title, String txt) {
-
         Email email = new Email.Builder().to(destination).subject(title).content(txt).build();
         mailSender.send(email.convertIntoMessage());
-
         logger.info("email update event has been sent to: " + destination);
     }
 }
