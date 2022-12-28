@@ -55,9 +55,7 @@ public class UserController {
      */
     @RequestMapping(value = "/settings/notification/update", method = RequestMethod.POST)
     public ResponseEntity<NotificationSettings> updateNotificationSettings(@RequestHeader("token") String token, @RequestBody NotificationSettings notification) {
-
         User user = authService.getCachedUser(token);
-        // notification.setUser(user);
         return ResponseEntity.ok(userService.updateNotificationSettings(user, notification));
     }
 

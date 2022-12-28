@@ -13,10 +13,6 @@ public class NotificationSettings {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
-
     @Column
     private boolean byEmail;
 
@@ -47,16 +43,15 @@ public class NotificationSettings {
     public NotificationSettings() {
     }
 
-    public static NotificationSettings defaultSettings(User user) {
-        return new NotificationSettings(user, true, true, true, true, true, true, true, true, true);
+    public static NotificationSettings defaultSettings() {
+        return new NotificationSettings(true, true, true, true, true, true, true, true, true);
     }
 
-    public NotificationSettings(User user, boolean byEmail, boolean byPopUp,
+    public NotificationSettings(boolean byEmail, boolean byPopUp,
                                 boolean userStatusChanged, boolean eventDataChanged,
                                 boolean eventCanceled, boolean userWasUninvited,
                                 boolean remind1MinBefore, boolean remind5MinBefore,
                                 boolean remind10MinBefore) {
-        this.user = user;
         this.byEmail = byEmail;
         this.byPopUp = byPopUp;
         this.userStatusChanged = userStatusChanged;
@@ -66,10 +61,6 @@ public class NotificationSettings {
         this.remind1MinBefore = remind1MinBefore;
         this.remind5MinBefore = remind5MinBefore;
         this.remind10MinBefore = remind10MinBefore;
-    }
-
-    public User getUser() {
-        return user;
     }
 
     public boolean getByEmail() {
@@ -108,10 +99,6 @@ public class NotificationSettings {
         return remind10MinBefore;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public void setByEmail(boolean byEmail) {
         this.byEmail = byEmail;
     }
@@ -148,7 +135,7 @@ public class NotificationSettings {
         this.remind10MinBefore = remind10MinBefore;
     }
 
-    public void updateNotificationSettings(NotificationSettings notificationSettings){
+    public void setNotificationSettings(NotificationSettings notificationSettings){
         byEmail = notificationSettings.getByEmail();
         byPopUp = notificationSettings.getByPopUp();
         userStatusChanged = notificationSettings.getUserStatusChanged();
@@ -164,7 +151,6 @@ public class NotificationSettings {
     public String toString() {
         return "Notification{" +
                 "id=" + id +
-                ", user=" + user +
                 ", byEmail=" + byEmail +
                 ", byPopUp=" + byPopUp +
                 ", userStatusChanged=" + userStatusChanged +

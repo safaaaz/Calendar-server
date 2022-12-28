@@ -9,7 +9,6 @@ import calendar.exceptions.EventNotFoundException;
 import calendar.exceptions.NotificationSettingsNotFoundException;
 import calendar.exceptions.UserNotFoundException;
 import calendar.repositories.EventRepository;
-import calendar.repositories.NotificationSettingsRepository;
 import calendar.repositories.UserRepository;
 import calendar.utils.Email;
 import org.apache.logging.log4j.LogManager;
@@ -29,8 +28,6 @@ public class NotificationService {
     EventRepository eventRepository;
     @Autowired
     UserRepository userRepository;
-    @Autowired
-    NotificationSettingsRepository notificationSettingsRepository;
 
     private final Logger logger;
 
@@ -40,6 +37,7 @@ public class NotificationService {
 
     /**
      * If the user update an event details, email message will send to all the invited users
+     *
      * @param updateEventDTO - the updated event
      */
     public void sendUpdateEventNotification(UpdateEventDTO updateEventDTO) {
@@ -50,23 +48,23 @@ public class NotificationService {
         Set<UserRolePair> userRoles = event.getUserRoles();
 
         for (UserRolePair userRolePair : userRoles) {
-            User user = userRepository.findById(userRolePair.getUser().getId()).orElseThrow(() -> {
-                throw new UserNotFoundException("User was not found for id: " + userRolePair.getId());
-            });
+            User user = userRepository.findById(userRolePair.getUser().getId()).get();
+            boolean byEmail = user.getNotificationSettings().getByEmail();
+            boolean eventDataChanged = user.getNotificationSettings().getEventDataChanged();
 
-            NotificationSettings notificationSettings = notificationSettingsRepository.findByUserId(user.getId()).orElseThrow(() -> {
-                throw new NotificationSettingsNotFoundException("Notification settings were not found for user id:" + user.getId());
-            });
-            if (notificationSettings.getByEmail() && notificationSettings.getEventDataChanged()) {
-                sendEmail(user.getEmail(), "event was updated", "event was updated");
+            if (byEmail && eventDataChanged) {
+                String title = String.format("event %s details has been updated", event.getTitle());
+                String content = String.format("event %s by organizer %s  on date %s was updated",event.getTitle(), event.getOrganizer().getEmail(), event.getDateTime());
+                sendEmail(user.getEmail(), title , content);
             }
         }
     }
 
     /**
      * send email to user
+     *
      * @param destination - user's email
-     * @param title - message title
+     * @param title       - message title
      * @param txt
      */
     private void sendEmail(String destination, String title, String txt) {

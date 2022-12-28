@@ -27,18 +27,9 @@ public class SpringApp {
     @EventListener(ApplicationReadyEvent.class)
     public void registerDefaultUsers(){
         List<User> defaultUsers = new ArrayList<>();
-        User david = new User("david", "yudin.david@gmail.com", "12345", TimeZone.UTC_2);
-        User safa = new User("safaa", "saf@gmail.com", "12345", TimeZone.UTC_12);
-        User sharon = new User("sharon", "sharon@gmail.com", "12345", TimeZone.UTC_11);
-        NotificationSettings nsDavid = NotificationSettings.defaultSettings(david);
-        NotificationSettings nsSharon = NotificationSettings.defaultSettings(sharon);
-        NotificationSettings nsSafa = NotificationSettings.defaultSettings(safa);
-        david.setNotificationSettings(nsDavid);
-        safa.setNotificationSettings(nsSafa);
-        sharon.setNotificationSettings(nsSharon);
-        defaultUsers.add(david);
-        defaultUsers.add(safa);
-        defaultUsers.add(sharon);
+        defaultUsers.add(User.newUserWithDefaultSettings("yudin.david@gmail.com", "12345"));
+        defaultUsers.add(User.newUserWithDefaultSettings("saf@gmail.com", "12345"));
+        defaultUsers.add(User.newUserWithDefaultSettings("sharon@gmail.com", "12345"));
         userRepository.saveAll(defaultUsers);
     }
 }
