@@ -78,10 +78,7 @@ public class EventService {
      */
     public EventController.ResponseUpdatedEvent updateEvent(UpdateEventDTO updateEventDTO, User user) {
 
-        // @@@ i think it should be on controller, we should discuss it @@@
-        if (Validate.isInPast(updateEventDTO.dateTime)) {
-            throw new PastDateException(updateEventDTO.dateTime);
-        }
+
         if (!Validate.isValidDuration(updateEventDTO.duration)) {
             throw new InvalidEventDurationException(updateEventDTO.duration);
         }
