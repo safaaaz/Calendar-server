@@ -6,7 +6,6 @@ import calendar.entities.User;
 import calendar.exceptions.IllegalOperationException;
 import calendar.exceptions.UserAlreadyExistsException;
 import calendar.exceptions.UserNotFoundException;
-import calendar.repositories.NotificationSettingsRepository;
 import calendar.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,9 +15,6 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private NotificationSettingsRepository notificationSettingsRepository;
 
     public User createUser(User user) {
         return userRepository.save(user);
@@ -46,12 +42,12 @@ public class UserService {
     /**
      * Update notification settings for the user
      * @param user
-     * @param tempNotificationSettings
+     * @param settings
      * @return current user's settings
      */
-    public NotificationSettings updateNotificationSettings(User user, NotificationSettings tempNotificationSettings){
+    public NotificationSettings updateNotificationSettings(User user, NotificationSettings newSettings){
        NotificationSettings currentSettings = user.getNotificationSettings();
-        currentSettings.updateNotificationSettings(tempNotificationSettings);
+        currentSettings.setNotificationSettings(newSettings);
         userRepository.save(user);
         return currentSettings;
     }
