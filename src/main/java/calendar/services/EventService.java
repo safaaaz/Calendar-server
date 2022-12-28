@@ -31,20 +31,26 @@ public class EventService {
     @Autowired
     private UserRepository userRepository;
 
+    /**
+     * get event from the database that have the id
+     * @param id - event id
+     * @return event
+     * @throws EventNotFoundException - if event not found
+     */
     public Event fetchEventById(Long id) {
         return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException("event not found with id " + id));
     }
 
+    /**
+     * add new event to the event's table
+     * @param eventDTO - the event that the server received from the client
+     * @param organizer - the user that add the event
+     * @return the new event
+     */
     public Event add(CreateEventDTO eventDTO, User organizer) {
-//        if (Validate.isInPast(eventDTO.dateTime)) {
-//            throw new PastDateException(eventDTO.dateTime);
-//        }
         if (!Validate.isValidDuration(eventDTO.duration)) {
             throw new InvalidEventDurationException(eventDTO.duration);
         }
-
-        //TODO: convert datetime from user's UTC(+/-) time to default UTC with utility class
-        //LocalDateTime defaultUtc = Converter.convertToDefaultUtc(eventDTO.dateTime);
 
         Event.Builder builder = new Event.Builder(eventDTO.title, organizer, eventDTO.dateTime);
         if (!eventDTO.attachments.isEmpty()) {
@@ -98,6 +104,12 @@ public class EventService {
         return resEvent;
     }
 
+    /**
+     * Get events from the database by a specific month
+     * @param user
+     * @param month
+     * @return list of events
+     */
     public List<Event> getEventsByMonth(User user, int month) {
         logger.info("EventService: get event by month " + month);
         List<Event> events = Stream.concat(user.getMyOwnedEvents().stream(), user.getSharedEvents().stream())
@@ -106,6 +118,11 @@ public class EventService {
         return events;
     }
 
+    /**
+     * Delete Event By Id
+     * @param id
+     * @return success message
+     */
     public String deleteEventById(Long id) {
         Event event = eventRepository.findById(id).get();
         List<User> userList = userRepository.findAll();
@@ -114,6 +131,12 @@ public class EventService {
         return "Event has been deleted";
     }
 
+    /**
+     * Invite guest to an event
+     * @param event
+     * @param user - the guest
+     * @return guest's details
+     */
     public UserDTO inviteGuest(Event event, User user) {
         if (event.getOrganizer() == user) {
             throw new IllegalOperationException("organizer can't be a guest at his own event");
@@ -132,6 +155,12 @@ public class EventService {
         return userDTO;
     }
 
+    /**
+     * remove guest from the event and delete the event from the shared event
+     * @param event
+     * @param user
+     * @return the removed user
+     */
     public User removeGuest(Event event, User user) {
         if (event.removeGuest(user) != null) {
             eventRepository.save(event);
@@ -142,7 +171,13 @@ public class EventService {
         }
     }
 
-    //This function traverses a list of users and return all of their public events.
+    /**
+     * function that traverses a list of users and return all of their public events
+     * @param user
+     * @param others
+     * @param month
+     * @return map<userEmail,list<events></events>
+     */
     public Map<String,List<Event>> getSharedCalendarByMonth(User user, List<User> others, int month) {
         for (User other: others) {
             if (!user.getMySharedWithCalendars().contains(other)) {
@@ -160,9 +195,21 @@ public class EventService {
         return eventsByEmail;
     }
 
+    /**
+     * share a list of users
+     * @param user
+     * @return List<UserDTO>
+     */
     public List<UserDTO> shareList(User user) {
       return user.getMySharedWithCalendars().stream().flatMap(u -> Stream.of(UserDTO.convertFromUser(u))).collect(Collectors.toList());
     }
+
+    /**
+     * Get user role in the event
+     * @param user
+     * @param eventId
+     * @return UserRole
+     */
     public UserRole getUserRole(User user,Long eventId){
         Event event = fetchEventById(eventId);
         if(event.getOrganizer().getId().equals(user.getId())){
@@ -173,6 +220,12 @@ public class EventService {
         return useRole.getRole();
     }
 
+    /**
+     * make an invited guest an admin (that can change some of the event's details and invite guests
+     * @param event
+     * @param user - the guest
+     * @return admin user
+     */
     public UserDTO makeAdmin(Event event, User user) {
         boolean alreadyAdmin = event.getUserRoles().stream().anyMatch(pair -> pair.getUser().getId() == user.getId() && pair.getRole() == UserRole.ADMIN);
         if (alreadyAdmin) {

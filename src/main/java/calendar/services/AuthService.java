@@ -41,7 +41,6 @@ public class AuthService {
 
     /**
      * authenticates if the given user doesn't exist in the database, if so sends email for verification
-     *
      * @param user (email and password type UserBody)
      * @return user, if something went wrong it returns null
      */
@@ -62,7 +61,6 @@ public class AuthService {
 
     /**
      * sends email verification for optional user
-     *
      * @param unconfirmed (email, password and unique token type Unconfirmed)
      */
     private void sendEmail(PreConfirmed unconfirmed) {
@@ -81,7 +79,6 @@ public class AuthService {
 
     /**
      * verify the given token if it is not forged
-     *
      * @param token (Unique key for each logged user)
      * @return token, if something went wrong returns null
      */
@@ -106,7 +103,6 @@ public class AuthService {
 
     /**
      * authenticates if the given user is in the database
-     *
      * @param temp (email and password type UserBody)
      * @return token (unique String that allows further actions)
      */
@@ -125,7 +121,6 @@ public class AuthService {
 
     /**
      * checks if the given email is in the database
-     *
      * @param email
      * @return boolean
      */
@@ -135,7 +130,6 @@ public class AuthService {
 
     /**
      * main function to check if the user is logged, and able to perform actions
-     *
      * @param token (Unique key for each logged user)
      * @return User
      */
@@ -150,6 +144,10 @@ public class AuthService {
         }
         return new ReturnUserForGithub(login(user),userEmail);
     }
+
+    /**
+     * class to save the token and the email for the user
+     */
     public class ReturnUserForGithub{
         String token;
         String email;
