@@ -125,6 +125,12 @@ public class EventController {
         return ResponseEntity.ok(eventService.deleteEventById(eventId));
     }
 
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
+    public ResponseEntity<String> deleteEventById(@RequestHeader("eventId") Long eventId){
+        logger.info("In delete event by its id");
+        return ResponseEntity.ok(eventService.deleteEventById(eventId));
+    }
+
     @RequestMapping(value = "inviteGuest", method = RequestMethod.POST)
     public ResponseEntity<UserDTO> inviteGuest(@RequestHeader Long eventId, @RequestBody UserDTO userDTO) {
         if (isBlank(userDTO.email)) {
