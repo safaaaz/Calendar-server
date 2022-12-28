@@ -110,9 +110,6 @@ public class AuthController {
             if (token != null) {
                 logger.info("successful login, user's token:  " + token);
 
-//                HttpHeaders responseHeaders = new HttpHeaders();
-//                responseHeaders.add("token", token);
-
                 return ResponseEntity.ok().body(new Gson().toJson(token)); // 200
             }
         }
