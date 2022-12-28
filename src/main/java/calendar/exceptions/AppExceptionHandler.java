@@ -64,5 +64,8 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
     }
 
-
+    @ExceptionHandler(NotificationSettingsNotFoundException.class)
+    public ResponseEntity<ApiError> handleNotificationSettingsNotFound(NotificationSettingsNotFoundException ex) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
+    }
 }

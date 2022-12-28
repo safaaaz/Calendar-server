@@ -145,7 +145,8 @@ public class EventService {
         //events I want to return: the others' myOwnedEvents WITHOUT privates.
         Map<String,List<Event>> eventsByEmail = new HashMap<>();
         for (User other: others) {
-            List<Event> otherSharedEvents = this.getEventsByMonth(other, month).stream().filter(event -> event.isPrivate() == false).collect(Collectors.toList());
+            //filter out private events and events that the other user has been invited to.
+            List<Event> otherSharedEvents = this.getEventsByMonth(other, month).stream().filter(event -> event.isPrivate() == false && event.getOrganizer().getId() == other.getId()).collect(Collectors.toList());
             eventsByEmail.put(other.getEmail(), otherSharedEvents);
         }
         return eventsByEmail;

@@ -34,6 +34,7 @@ public class User implements Serializable {
     @JsonIgnore
     @ManyToMany(targetEntity = Event.class)
     private List<Event> sharedEvents;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private NotificationSettings notificationSettings;
 
