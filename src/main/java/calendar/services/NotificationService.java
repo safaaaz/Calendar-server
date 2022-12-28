@@ -54,16 +54,10 @@ public class NotificationService {
                 throw new UserNotFoundException("User was not found for id: " + userRolePair.getId());
             });
 
-            System.out.println("1-@@@@@@@@@@@@@@@@@@");
-            System.out.println(user.toString());
-            System.out.println("@@@@@@@@@@@@@@@@@@");
-
             NotificationSettings notificationSettings = notificationSettingsRepository.findByUserId(user.getId()).orElseThrow(() -> {
                 throw new NotificationSettingsNotFoundException("Notification settings were not found for user id:" + user.getId());
             });
-            System.out.println("2-@@@@@@@@@@@@@@@@@@");
-            System.out.println(notificationSettings);
-            System.out.println("@@@@@@@@@@@@@@@@@@");
+
             if (notificationSettings.getByEmail() && notificationSettings.getEventDataChanged()) {
                 sendEmail(user.getEmail(), "event was updated", "event was updated");
             }
