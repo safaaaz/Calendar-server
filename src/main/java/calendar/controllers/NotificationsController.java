@@ -7,11 +7,9 @@ import calendar.entities.UserRolePair;
 import calendar.repositories.EventRepository;
 import calendar.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.converter.MessageConversionException;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -25,6 +23,11 @@ public class NotificationsController {
     @Autowired
     private EventRepository eventRepository;
 
+    /**
+     * This function is used to update events and create notifications for relevant users.
+     * @param resEvent an instance of EventController.ResponseUpdatedEvent
+     * @return an instance of NotificationDetails containing the message and the list of relevant users.
+     */
     @MessageExceptionHandler()
     @MessageMapping("/update/")
     @SendTo("/topic/updates/")
@@ -47,6 +50,14 @@ public class NotificationsController {
         String message ="user with email: "+resEvent.getEditorEmail()+" update event with title: "+resEvent.getEventTitle();
         return new NotificationDetails(message,relevantUsers);
     }
+
+
+    /**
+     * This function sends a notification to the relevant users when a user is invited to an event.
+     *
+     * @param invitedUser a UserDTO object containing the eventId and email of the invited user.
+     * @return a NotificationDetails object containing a message and a list of relevant users.
+     */
     @MessageExceptionHandler()
     @MessageMapping("/inviteGuest/")
     @SendTo("/topic/updates/")

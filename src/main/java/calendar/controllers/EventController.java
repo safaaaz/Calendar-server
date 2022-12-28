@@ -6,9 +6,7 @@ import calendar.DTO.UpdateEventDTO;
 import calendar.DTO.UserDTO;
 import calendar.entities.Event;
 import calendar.entities.User;
-import calendar.entities.UserRolePair;
 import calendar.exceptions.MissingEventFieldException;
-
 import calendar.services.AuthService;
 import calendar.services.EventService;
 import calendar.services.NotificationService;
@@ -19,7 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
