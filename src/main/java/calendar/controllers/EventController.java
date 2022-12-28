@@ -161,13 +161,10 @@ public class EventController {
         }
 
         User user = authService.getCachedUser(token);
-
-        // lets assume everything is okay, thats is why we call the function
-        // in general we should wait till the update is finished and then send notification
-
+        Event updatedEvent = eventService.updateEvent(updateEventDTO, user);
         notificationService.sendUpdateEventNotification(updateEventDTO);
 
-        return ResponseEntity.ok(eventService.updateEvent(updateEventDTO, user));
+        return ResponseEntity.ok(updatedEvent);
     }
     @RequestMapping(value = "/makeAdmin", method = RequestMethod.POST)
     public ResponseEntity<UserDTO> makeAdmin(@RequestBody UserDTO userDTO, @RequestHeader("eventId") Long eventId) {

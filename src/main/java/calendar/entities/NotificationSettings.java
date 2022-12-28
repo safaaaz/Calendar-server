@@ -47,6 +47,10 @@ public class NotificationSettings {
     public NotificationSettings() {
     }
 
+    public static NotificationSettings defaultSettings(User user) {
+        return new NotificationSettings(user, true, true, true, true, true, true, true, true, true);
+    }
+
     public NotificationSettings(User user, boolean byEmail, boolean byPopUp,
                                 boolean userStatusChanged, boolean eventDataChanged,
                                 boolean eventCanceled, boolean userWasUninvited,

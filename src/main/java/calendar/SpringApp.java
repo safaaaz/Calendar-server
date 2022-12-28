@@ -1,5 +1,6 @@
 package calendar;
 
+import calendar.entities.NotificationSettings;
 import calendar.entities.User;
 import calendar.enums.TimeZone;
 import calendar.repositories.UserRepository;
@@ -22,5 +23,22 @@ public class SpringApp {
 
     public static void main(String[] args) {
         SpringApplication.run(SpringApp.class, args);
+    }
+    @EventListener(ApplicationReadyEvent.class)
+    public void registerDefaultUsers(){
+        List<User> defaultUsers = new ArrayList<>();
+        User david = new User("david", "yudin.david@gmail.com", "12345", TimeZone.UTC_2);
+        User safa = new User("safaa", "saf@gmail.com", "12345", TimeZone.UTC_12);
+        User sharon = new User("sharon", "sharon@gmail.com", "12345", TimeZone.UTC_11);
+        NotificationSettings nsDavid = NotificationSettings.defaultSettings(david);
+        NotificationSettings nsSharon = NotificationSettings.defaultSettings(sharon);
+        NotificationSettings nsSafa = NotificationSettings.defaultSettings(safa);
+        david.setNotificationSettings(nsDavid);
+        safa.setNotificationSettings(nsSafa);
+        sharon.setNotificationSettings(nsSharon);
+        defaultUsers.add(david);
+        defaultUsers.add(safa);
+        defaultUsers.add(sharon);
+        userRepository.saveAll(defaultUsers);
     }
 }
