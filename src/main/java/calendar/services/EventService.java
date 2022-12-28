@@ -27,10 +27,10 @@ public class EventService {
 
     @Autowired
     private EventRepository eventRepository;
-    public static final Logger logger = LogManager.getLogger(EventService.class);
     @Autowired
     private UserRepository userRepository;
 
+    public static final Logger logger = LogManager.getLogger(EventService.class);
     /**
      * get event from the database that have the id
      * @param id - event id
@@ -93,9 +93,6 @@ public class EventService {
         if (!updateEventDTO.location.isEmpty()) {
             builder.location(updateEventDTO.location);
         }
-
-        Event updatedEvent = builder.build();
-
         Event currentEvent = eventRepository.findById(updateEventDTO.id).get();
         currentEvent.setEvent(updateEventDTO);
 
@@ -124,7 +121,7 @@ public class EventService {
      * @return success message
      */
     public String deleteEventById(Long id) {
-        Event event = eventRepository.findById(id).get();
+        Event event = fetchEventById(id);
         List<User> userList = userRepository.findAll();
         userList.stream().forEach((user) -> {user.getSharedEvents().remove(event);});
         eventRepository.deleteById(id);
