@@ -60,7 +60,6 @@ public class Event implements Serializable {
     private Set<UserStatusPair> userStatuses;
 
     Event() {
-
     }
 
     public UserRolePair inviteGuest(User user) {
@@ -85,7 +84,6 @@ public class Event implements Serializable {
 
             return user;
         }
-
         return null;
     }
 

@@ -1,22 +1,22 @@
 package calendar.filter;
 
-import calendar.entities.Event;
 import calendar.entities.MutableHttpServletRequest;
 import calendar.entities.User;
-import calendar.enums.OPERATIONS;
 import calendar.enums.UserRole;
 import calendar.services.AuthService;
 import calendar.services.EventService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.servlet.*;
 import javax.servlet.FilterConfig;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RolesFilter implements Filter {
     public static final Logger logger = LogManager.getLogger(RolesFilter.class);
