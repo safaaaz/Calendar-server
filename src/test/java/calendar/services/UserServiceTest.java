@@ -45,14 +45,6 @@ public class UserServiceTest {
         assertEquals(validUser, userService.fetchUserById(1L));
     }
 
-//    @Test
-//    public void fetchUserById_invalidUserId_equalsUser() {
-//        given(userRepository.findById(1L)).willReturn(Optional.ofNullable(validUser));
-//        assertThrows(UserNotFoundException.class, () -> {
-//            userService.fetchUserById(2L);
-//        });
-//    }
-
     @Test
     public void fetchUserByEmail_validUserEmail_equalsUser() {
         given(userRepository.findByEmail("valid.user.123@gmail.com")).willReturn(Optional.ofNullable(validUser));

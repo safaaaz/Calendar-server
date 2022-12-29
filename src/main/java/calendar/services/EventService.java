@@ -123,7 +123,9 @@ public class EventService {
      * @return success message
      */
     public String deleteEventById(Long id) {
+
         Event event = fetchEventById(id);
+        
         List<User> userList = userRepository.findAll();
         userList.stream().forEach((user) -> {user.getSharedEvents().remove(event);});
         eventRepository.deleteById(id);

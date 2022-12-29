@@ -65,8 +65,6 @@ public class EventController {
     @RequestMapping(value = "add", method = RequestMethod.POST)
     public ResponseEntity<Event> addEvent(@RequestBody CreateEventDTO createEventDTO, @RequestHeader("token") String token) {
 
-        System.out.println(createEventDTO.toString());
-
         if (isBlank(createEventDTO.title)) {
             throw new MissingEventFieldException("title");
         }
@@ -207,8 +205,6 @@ public class EventController {
      */
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public ResponseEntity<ResponseUpdatedEvent> updateEvent(@RequestBody UpdateEventDTO updateEventDTO, @RequestHeader("token") String token) {
-
-        System.out.println(updateEventDTO.toString());
 
         if (isBlank(updateEventDTO.title)) {
             throw new MissingEventFieldException("title");

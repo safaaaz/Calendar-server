@@ -54,11 +54,6 @@ public class AuthControllerTest {
     }
 
     @Test
-    void tokenVerification_invalidToken_equalsHttpStatusBadRequest() {
-        assertEquals(HttpStatus.BAD_REQUEST, authController.tokenVerification("forged-token-earth-is-flat").getStatusCode(), "verification with forged token did had to return status 400");
-    }
-
-    @Test
     void login_validUser_equalsHttpStatusOk() {
         given(authService.login(validUser)).willReturn("legit-token");
         assertEquals(HttpStatus.OK, authController.login(validUser).getStatusCode(), "login with valid user had to return status 200");

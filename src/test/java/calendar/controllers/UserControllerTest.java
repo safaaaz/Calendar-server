@@ -40,21 +40,9 @@ public class UserControllerTest {
         assertEquals(HttpStatus.OK, userController.fetchUserById(1L).getStatusCode());
     }
 
-
-//    @Test
-//    public void fetchUserById_wrongUserId_equalsHttpStatusBadRequest () {
-//        assertEquals(HttpStatus.BAD_REQUEST, userController.fetchUserById(1L).getStatusCode());
-//    }
-
     @Test
     public void fetchUserByEmail_userEmail_equalsHttpStatusOK () {
         given(userService.fetchUserByEmail(validUser.getEmail())).willReturn(validUser);
         assertEquals(HttpStatus.OK, userController.fetchUserByEmail(validUser.getEmail()).getStatusCode());
     }
-
-//    @Test void updateNotificationSettings_tokenAndNotificationSettings_equalsHttpStatusOK () {
-//        given(authService.getCachedUser("start@google")).willReturn(validUser);
-//        NotificationSettings notificationSettings = new NotificationSettings(validUser, true, true, true, true, true, true, true, true, true);
-//        assertEquals(HttpStatus.OK, userController.updateNotificationSettings("start@google", notificationSettings));
-//    }
 }
