@@ -3,7 +3,6 @@ package calendar.filter;
 import calendar.entities.Event;
 import calendar.entities.MutableHttpServletRequest;
 import calendar.entities.User;
-import calendar.enums.OPERATIONS;
 import calendar.enums.UserRole;
 import calendar.services.AuthService;
 import calendar.services.EventService;

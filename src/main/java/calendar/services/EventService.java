@@ -216,6 +216,7 @@ public class EventService {
         }
         Set<UserRolePair> userRoles = event.getUserRoles();
         UserRolePair useRole=userRoles.stream().filter((role)->role.getUser().getId()==user.getId()).findAny().get();
+        logger.info(useRole);
         return useRole.getRole();
     }
 
