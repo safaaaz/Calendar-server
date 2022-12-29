@@ -78,6 +78,8 @@ public class EventService {
      * @return An object to represent the newly updated event.
      */
     public EventController.ResponseUpdatedEvent updateEvent(UpdateEventDTO updateEventDTO, User user) {
+
+
         if (!Validate.isValidDuration(updateEventDTO.duration)) {
             throw new InvalidEventDurationException(updateEventDTO.duration);
         }

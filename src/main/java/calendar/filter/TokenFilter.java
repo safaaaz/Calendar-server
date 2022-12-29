@@ -12,6 +12,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 public class TokenFilter implements Filter {
     public static final Logger logger = LogManager.getLogger(TokenFilter.class);
@@ -62,6 +63,8 @@ public class TokenFilter implements Filter {
                 User user = authService.getCachedUser(token);
                 if (user != null) {
                     req.setAttribute("token", token);
+                    req.setAttribute("user", user);
+                    req.setAttribute("eventId",req.getHeader("eventId"));
                     filterChain.doFilter(req, res);
                 } else returnBadResponse(res);
             } else returnBadResponse(res);
