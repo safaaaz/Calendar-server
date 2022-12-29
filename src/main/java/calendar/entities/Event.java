@@ -3,11 +3,15 @@ package calendar.entities;
 import calendar.DTO.UpdateEventDTO;
 import calendar.enums.UserRole;
 import calendar.enums.UserStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -23,8 +27,8 @@ public class Event implements Serializable {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @JsonIncludeProperties(value = {"id"})
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIncludeProperties(value = {"id", "email"})
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "organizer_id", referencedColumnName = "id")
     private User organizer;
 
@@ -46,35 +50,29 @@ public class Event implements Serializable {
     @Column(name = "location")
     private String location;
 
-    //@JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attachment> attachments;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
-    private Set<UserRolePair> userRoles;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<UserRolePair> userRoles = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
-    private Set<UserStatusPair> userStatuses;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserStatusPair> userStatuses = new HashSet<>();
 
     Event() {
-
     }
 
     public UserRolePair inviteGuest(User user) {
-        UserRolePair guestUser = UserRolePair.newGuest(user);
-        UserStatusPair pendingUser = UserStatusPair.newPending(user);
-        if (!userRoles.contains(guestUser)) {
+        boolean alreadyGuestOrAdmin = userRoles.stream().anyMatch(pair -> pair.getUser().getId() == user.getId() && (pair.getRole() == UserRole.GUEST || pair.getRole() == UserRole.ADMIN));
+        if (!alreadyGuestOrAdmin) {
+            UserRolePair guestUser = UserRolePair.newGuest(user);
+            UserStatusPair pendingUser = UserStatusPair.newPending(user);
             this.userRoles.add(guestUser);
             this.userStatuses.add(pendingUser);
             return guestUser;
         }
 
-        return null;
-    }
-
-    public UserRolePair addAdmin() {
-        //Can only choose from the guests list.
-        //Update guest's role to admin.
         return null;
     }
 
@@ -87,13 +85,16 @@ public class Event implements Serializable {
 
             return user;
         }
-
         return null;
     }
 
     //This method gets a specific user and return its current arrival status
-    public UserStatusPair findUserStatusPair(final Set<UserStatusPair> statusPairs, User user){
+    public UserStatusPair findUserStatusPair(final Set<UserStatusPair> statusPairs, User user) {
         return statusPairs.stream().filter(pair -> pair.getUser().equals(user)).findFirst().get();
+    }
+
+    public boolean isGuest(User user) {
+        return userRoles.stream().anyMatch(role -> role.getUser().getId() == user.getId() && role.getRole() == UserRole.GUEST);
     }
 
     public static class Builder {
@@ -157,7 +158,7 @@ public class Event implements Serializable {
         this.attachments = builder.attachments;
     }
 
-    public Event createNewSimpleEvent(String title, User organizer, LocalDateTime dateTime) {
+    public static Event createNewSimpleEvent(String title, User organizer, LocalDateTime dateTime) {
         return new Event.Builder(title, organizer, dateTime).build();
     }
 

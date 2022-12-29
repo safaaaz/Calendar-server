@@ -10,7 +10,6 @@ import java.util.*;
 
 @Entity
 @Table(name = "user")
-//@JsonIgnoreProperties(value = {"handler", "hibernateLazyInitializer", "FieldHandler"})
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,7 +21,7 @@ public class User implements Serializable {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "time_zone") // , nullable = false
+    @Column(name = "time_zone")
     @Enumerated(EnumType.STRING)
     private TimeZone timeZone;
 
@@ -31,16 +30,16 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)
     private List<Event> myOwnedEvents;
 
+    @JsonIgnore
     @ManyToMany(targetEntity = Event.class)
     private List<Event> sharedEvents;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private NotificationSettings notificationSettings;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<User> mySharedWithCalendars;
 
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-//    private Set<UserEnrolled> userEnrolled;
     @Column(name = "auth_provider")
     @Enumerated(EnumType.STRING)
     private Provider provider;
@@ -50,6 +49,16 @@ public class User implements Serializable {
     public User(String email, Provider provider) {
         this.email = email;
         this.provider = provider;
+    }
+
+    public static User newUserWithDefaultSettings( String email, String password) {
+        return new User(email,password, TimeZone.UTC, NotificationSettings.defaultSettings());
+    }
+    private User(String email, String password, TimeZone timeZone, NotificationSettings notificationSettings) {
+        this.email = email;
+        this.password = password;
+        this.timeZone = timeZone;
+        this.notificationSettings = notificationSettings;
     }
 
     public void setProvider(Provider provider) {
@@ -65,12 +74,6 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public User(String name, String email, String password, TimeZone timeZone) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.timeZone = timeZone;
-    }
 
     public Long getId() {
         return id;
@@ -95,10 +98,6 @@ public class User implements Serializable {
     public List<Event> getMyOwnedEvents() {
         return myOwnedEvents;
     }
-
-//    public List<Permission> getPermissions() {
-//        return permissions;
-//    }
 
     public void setId(Long id) {
         this.id = id;

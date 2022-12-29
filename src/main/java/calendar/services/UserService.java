@@ -1,11 +1,11 @@
 package calendar.services;
 
+import calendar.DTO.UserDTO;
 import calendar.entities.NotificationSettings;
 import calendar.entities.User;
 import calendar.exceptions.IllegalOperationException;
 import calendar.exceptions.UserAlreadyExistsException;
 import calendar.exceptions.UserNotFoundException;
-import calendar.repositories.NotificationSettingsRepository;
 import calendar.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,41 +16,49 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private NotificationSettingsRepository notificationSettingsRepository;
-
     public User createUser(User user) {
         return userRepository.save(user);
     }
-
+    /**
+     * get the user from the database by his id
+     * @param id
+     * @return user
+     * @throws UserNotFoundException - if user not found
+     */
     public User fetchUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("user not found with id " + id));
     }
 
+    /**
+     * get the user from the database by his email
+     * @param email
+     * @return user
+     * @throws UserNotFoundException - if user not found
+     */
     public User fetchUserByEmail(String email) {
        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("user not found with email " + email));
     }
 
-    public NotificationSettings updateNotificationSettings(User user, NotificationSettings tempNotificationSettings){
-
-        //NotificationSettings currentSettings = notificationSettingsRepository.findByUserId(user.getId()).orElseThrow(() -> {throw new UserNotFoundException("user was not found, notifications settings update failed");});
-        //notificationSettingsRepository.delete(currentSettings);
-        //userRepository.delete(user);
-
-        //NotificationSettings newSettings = new NotificationSettings(user,tempNotificationSettings.getByEmail(), tempNotificationSettings.getByPopUp(), tempNotificationSettings.getUserStatusChanged(), tempNotificationSettings.getEventDataChanged(), tempNotificationSettings.getEventCanceled(), tempNotificationSettings.getUserWasUninvited(), tempNotificationSettings.getRemind1MinBefore(), tempNotificationSettings.getRemind5MinBefore(), tempNotificationSettings.getRemind10MinBefore());
-        NotificationSettings currentSettings = user.getNotificationSettings();
-        currentSettings.updateNotificationSettings(tempNotificationSettings);
-
+    /**
+     * Update notification settings for the user
+     * @param user
+     * @param settings
+     * @return current user's settings
+     */
+    public NotificationSettings updateNotificationSettings(User user, NotificationSettings newSettings){
+       NotificationSettings currentSettings = user.getNotificationSettings();
+        currentSettings.setNotificationSettings(newSettings);
         userRepository.save(user);
-
-        //notificationSettingsRepository.save(newSettings);
-
         return currentSettings;
     }
 
-    //This method shares one user calendar with another user.
-    //user - the newly added user.
-    public User addUserToMyCalendars(User user, User sharedWithUser) {
+    /**
+     * This method shares one user calendar with another user
+     * @param user - the newly added user
+     * @param sharedWithUser
+     * @return UserDTO - added user
+     */
+    public UserDTO addUserToMyCalendars(User user, User sharedWithUser) {
         if (user.equals(sharedWithUser)) {
             throw new IllegalOperationException("can't share calendar with myself");
         }
@@ -58,9 +66,9 @@ public class UserService {
         if (sharedWithUser.addUserToMyCalendars(user) != null) {
             userRepository.save(sharedWithUser);
         } else {
-            throw new UserAlreadyExistsException(user.getEmail());
+            throw new UserAlreadyExistsException(sharedWithUser.getEmail());
         }
 
-        return user;
+        return UserDTO.convertFromUser(sharedWithUser);
     }
 }

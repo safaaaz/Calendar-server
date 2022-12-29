@@ -1,5 +1,6 @@
-package calendar.exceptions;
+package calendar.controllers;
 
+import calendar.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -64,5 +65,8 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
     }
 
-
+    @ExceptionHandler(NotificationSettingsNotFoundException.class)
+    public ResponseEntity<ApiError> handleNotificationSettingsNotFound(NotificationSettingsNotFoundException ex) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
+    }
 }

@@ -19,6 +19,12 @@ public class GitRoot {
         this.token_type = token_type;
         this.scope = scope;
     }
+
+    /**
+     * make a request for the GitHub api to use the user's email
+     * @return user's email
+     * @throws RuntimeException
+     */
     public String getEmailFromToken(){
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization","Bearer "+access_token);
