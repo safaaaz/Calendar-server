@@ -219,7 +219,7 @@ public class EventController {
 
         User user = authService.getCachedUser(token);
         ResponseUpdatedEvent updatedEvent = eventService.updateEvent(updateEventDTO, user);
-        notificationService.sendUpdateEventNotification(updateEventDTO);
+        //notificationService.sendUpdateEventNotification(updateEventDTO);
 
         return ResponseEntity.ok(updatedEvent);
     }
