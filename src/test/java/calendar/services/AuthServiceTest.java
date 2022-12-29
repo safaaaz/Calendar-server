@@ -86,8 +86,10 @@ public class AuthServiceTest {
         assertFalse(authService.isEmailInDatabase("invalid.email@gmail.com"));
     }
 
+
     @Test
     public void getCachedUsed_validToken_equalsValidUser() {
         assertEquals(validUser, authService.getCachedUser("test-test-test"));
     }
+
 }
