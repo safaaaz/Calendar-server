@@ -6,6 +6,7 @@ import calendar.DTO.UserDTO;
 import calendar.entities.Event;
 import calendar.entities.User;
 import calendar.entities.UserRolePair;
+import calendar.enums.UserRole;
 import calendar.exceptions.EventNotFoundException;
 import calendar.exceptions.IllegalOperationException;
 import calendar.exceptions.InvalidEventDurationException;
@@ -44,6 +45,8 @@ public class EventServiceTest {
 
     private User user;
     private User anotherUser;
+
+    private User organizer;
     private Event event;
 
     private UserRolePair guestRolePair;
@@ -55,7 +58,9 @@ public class EventServiceTest {
         user.setId(1L);
         anotherUser = User.newUserWithDefaultSettings("another@gmail.com", "12345");
         anotherUser.setId(2L);
-        event = Event.createNewSimpleEvent("Event1", null, LocalDateTime.now());
+        organizer = User.newUserWithDefaultSettings("another@gmail.com", "12345");
+        organizer.setId(2L);
+        event = Event.createNewSimpleEvent("Event1", organizer, LocalDateTime.now());
         //event.setUserRoles();
         event.setId(1L);
 
@@ -114,11 +119,39 @@ public class EventServiceTest {
     }
 
     @Test
-    @DisplayName("invite guest that isn't in the guest list - SUCCESS")
-    void inviteGuest_givenUserNotGuest_success() {
-        UserDTO userDTO = UserDTO.convertFromUser(user);
-        userDTO.setEventId(event.getId());
-        assertEquals(userDTO,eventService.inviteGuest(event, user));
+    @DisplayName("user role in event - organizer")
+    void getUserRole_givenOrganizer_organizer() {
+        given(eventRepository.findById(1L)).willReturn(Optional.of(event));
+        event.setOrganizer(user);
+        assertEquals(UserRole.ORGANIZER, eventService.getUserRole(user,event.getId()));
     }
 
+    @Test
+    @DisplayName("user role in event - admin")
+    void getUserRole_givenOrganizer_admin() {
+        given(eventRepository.findById(1L)).willReturn(Optional.of(event));
+        event.getUserRoles().add(adminRolePair);
+        assertEquals(UserRole.ADMIN, eventService.getUserRole(user,event.getId()));
+    }
+
+    @Test
+    @DisplayName("user role in event - guest")
+    void getUserRole_givenOrganizer_guest() {
+        given(eventRepository.findById(1L)).willReturn(Optional.of(event));
+        event.getUserRoles().add(guestRolePair);
+        assertEquals(UserRole.GUEST, eventService.getUserRole(user,event.getId()));
+    }
+
+    @Test
+    @DisplayName("make admin when user already admin")
+    void makeAdmin_givenAdmin_fail() {
+        event.getUserRoles().add(adminRolePair);
+        assertThrows(UserAlreadyHaveRoleException.class, () -> eventService.makeAdmin(event, user));
+    }
+
+    @Test
+    @DisplayName("make admin when user is not guest")
+    void makeAdmin_givenNotGuest_fail() {
+        assertThrows(IllegalOperationException.class, () -> eventService.makeAdmin(event, user));
+    }
 }

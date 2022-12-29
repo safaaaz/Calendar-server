@@ -1,10 +1,7 @@
 package calendar.services;
 
-import calendar.entities.PreConfirmed;
 import calendar.entities.User;
 import calendar.exceptions.IllegalOperationException;
-import calendar.exceptions.UserNotFoundException;
-import calendar.repositories.NotificationSettingsRepository;
 import calendar.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,9 +21,6 @@ public class UserServiceTest {
 
     @Mock
     UserRepository userRepository;
-
-    @Mock
-    NotificationSettingsRepository notificationSettingsRepository;
 
     @InjectMocks
     private UserService userService;
