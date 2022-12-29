@@ -75,19 +75,21 @@ public class AuthServiceTest {
         assertNull(authService.login(invalidUser));
     }
 
-//    @Test
-//    public void isEmailInDatabase_validEmail_equalsTrue () {
-//        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.ofNullable(user));
-//        assertTrue(authService.isEmailInDatabase(user.getEmail()));
-//    }
-//
-//    @Test
-//    public void isEmailInDatabase_invalidEmail_equalsFalse () {
-//        assertFalse(authService.isEmailInDatabase("invalid.email@gmail.com"));
-//    }
+    @Test
+    public void isEmailInDatabase_validEmail_equalsTrue () {
+        given(userRepository.findByEmail(validUser.getEmail())).willReturn(Optional.ofNullable(validUser));
+        assertTrue(authService.isEmailInDatabase(validUser.getEmail()));
+    }
+
+    @Test
+    public void isEmailInDatabase_invalidEmail_equalsFalse () {
+        assertFalse(authService.isEmailInDatabase("invalid.email@gmail.com"));
+    }
+
 
     @Test
     public void getCachedUsed_validToken_equalsValidUser() {
         assertEquals(validUser, authService.getCachedUser("test-test-test"));
     }
+
 }

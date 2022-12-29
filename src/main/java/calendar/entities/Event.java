@@ -11,6 +11,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -54,13 +55,12 @@ public class Event implements Serializable {
     private List<Attachment> attachments;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Set<UserRolePair> userRoles;
+    private Set<UserRolePair> userRoles = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UserStatusPair> userStatuses;
+    private Set<UserStatusPair> userStatuses = new HashSet<>();
 
     Event() {
-
     }
 
     public UserRolePair inviteGuest(User user) {
@@ -85,7 +85,6 @@ public class Event implements Serializable {
 
             return user;
         }
-
         return null;
     }
 
@@ -159,7 +158,7 @@ public class Event implements Serializable {
         this.attachments = builder.attachments;
     }
 
-    public Event createNewSimpleEvent(String title, User organizer, LocalDateTime dateTime) {
+    public static Event createNewSimpleEvent(String title, User organizer, LocalDateTime dateTime) {
         return new Event.Builder(title, organizer, dateTime).build();
     }
 
