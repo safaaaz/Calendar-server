@@ -3,7 +3,6 @@ package calendar.filter;
 import calendar.entities.Event;
 import calendar.entities.MutableHttpServletRequest;
 import calendar.entities.User;
-import calendar.enums.OPERATIONS;
 import calendar.enums.UserRole;
 import calendar.services.AuthService;
 import calendar.services.EventService;
@@ -46,6 +45,19 @@ public class RolesFilter implements Filter {
         if(eventId==null || user==null) return null;
         return eventService.getUserRole(user,  eventId);
     }
+    public void updateFilter(MutableHttpServletRequest request,HttpServletResponse response,FilterChain filterChain) throws IOException, ServletException {
+        Long eventId = Long.valueOf((String) request.getAttribute("eventId"));
+        String title = request.getHeader("title");
+        Integer duration = Integer.valueOf(request.getHeader("duration"));
+        String date = request.getHeader("time");
+        Event event = eventService.fetchEventById(eventId);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm:ss");
+        if(!title.equals(event.getTitle()) || duration != event.getDuration() || !date.equals(event.getDateTime().format(format))){
+            returnBadResponse(response,"Admin can't edit event's title, duration or event's date");
+        } else {
+            filterChain.doFilter(request, response);
+        }
+    }
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         logger.info("In roleFilter doFilter");
@@ -53,9 +65,11 @@ public class RolesFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) servletResponse;
         String path = ((HttpServletRequest) servletRequest).getServletPath();
         if (path.startsWith("/event/")) {
-            List<UserRole> roles = permissionsMap.get(path.split("/")[2]);
+            String operation = path.split("/")[2];
+            List<UserRole> roles = permissionsMap.get(operation);
             if (roles != null) {
-                if (!roles.contains(getUserRole(req))) {
+                if(operation.equals("update") && getUserRole(req).equals(UserRole.ADMIN)) {updateFilter(req,res,filterChain);}
+                else if (!roles.contains(getUserRole(req))) {
                     returnBadResponse(res, "The user have no permissions to do this operation");
                 } else filterChain.doFilter(req, res);
             } else filterChain.doFilter(req, res);
